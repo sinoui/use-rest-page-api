@@ -78,7 +78,7 @@ GET /users?sex=male&size=10&page=0&sort=firstName&sort=lastName,desc
 
 后端返回 json 格式数据，数据如下：
 
-```json
+```js
 {
   "content": [
     {
