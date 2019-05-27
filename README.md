@@ -384,7 +384,7 @@ const dataSource = useRestPageApi<T, PageData>(
 
 ### 定制分页查询请求
 
-使用`transformListRequest`来指定分页列表查询请求。例如下面的转换器：
+使用`transformListRequest`来定制分页列表查询请求。例如下面的转换器：
 
 ```ts
 import qs from 'qs';
@@ -615,6 +615,12 @@ dataSource.removeItemById('3');
 
 // 获取原始响应数据
 const rawResponse = dataSource.rawResponse;
+
+// 获取是否正在加载列表数据的状态
+const isLoading = dataSource.isLoading;
+
+// 获取是否加载列表数据失败的状态
+const isError = dataSource.isError;
 ```
 
 ### 分页和排序
