@@ -614,6 +614,9 @@ dataSource.addItem({id: '5', firstName: '赵'， lastName: '六'});
 // 删除id为'1'的用户数据
 dataSource.removeItemById('3');
 
+// 删除多条数据
+dataSource.removeItemsByIds(['1', '2', '3']);
+
 // 获取原始响应数据
 const rawResponse = dataSource.rawResponse;
 
@@ -699,18 +702,26 @@ function fetch<T>(
 ```ts
 // 获取id为'1'的数据
 const user = await dataSource.get('1');
+
 // 新增用户数据
 const user = await dataSource.save({ firstName: '张', lastName: '三' });
+
 // 修改用户数据
 const user = await dataSource.update({
   id: '1',
   firstName: '张',
   lastName: '三',
 });
+
 // 删除数据
 await dataSource.delete('1');
 // or
 await dataSource.remove('1');
+
+// 删除多条数据
+await dataSource.delete(['1', '2', '3']);
+// or
+await dataSource.remove(['1', '2', '3']);
 ```
 
 以上操作默认均会修改`dataSource.items`。如果不需要更新，则可以指定函数的第二个参数为`false`，如：
