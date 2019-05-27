@@ -9,6 +9,37 @@
 - 列表数据维护
 - 查询条件与浏览器的 url 同步
 
+目录：
+
+- [安装](#安装)
+- [快速使用](#快速使用)
+- [RESTful CRUD API](#restful-crud-api)
+  - [获取分页数据](#获取分页数据)
+  - [获取单个数据](#获取单个数据)
+  - [新增数据](#新增数据)
+  - [更新数据](#更新数据)
+  - [删除数据](#删除数据)
+- [数据结构](#数据结构)
+  - [分页与排序信息](#分页与排序信息)
+  - [分页查询响应](#分页查询响应)
+- [useRestPageApi 参数说明](#userestpageapi-参数说明)
+  - [url](#url)
+  - [defaultValue](#defaultValue)
+  - [options](#options)
+- [转换器](#转换器)
+  - [定制分页查询请求](#定制分页查询请求)
+  - [定制分页查询响应转换器](#定制分页查询响应转换器)
+  - [定制请求单个数据响应转换器](#定制请求单个数据响应转换器)
+  - [定制新增请求的数据转换器](#定制新增请求的数据转换器)
+  - [定制新增响应的数据转换器](#定制新增响应的数据转换器)
+  - [定制更新请求的数据转换器](#定制更新请求的数据转换器)
+  - [定制更新响应的数据转换器](#定制更新响应的数据转换器)
+- [dataSurce 的属性和方法](#datasource-的属性和方法)
+  - [获取查询数据](#获取查询数据)
+  - [分页和排序](#分页和排序)
+  - [列表查询](#列表查询)
+  - [与增删改查 API 交互](#与增删改查-api-交互)
+
 ## 安装
 
 ```shell
@@ -72,7 +103,7 @@ GET /users?sex=male&size=10&page=0&sort=firstName&sort=lastName,desc
 - `page` - 第几页，从第 0 页开始计算
 - `sort` - 排序，默认格式为`propertyName[,asc|desc]`，如果有多个，则按照`sort=propertyName&sort=propertyName2,desc`这样的方式编排
 
-注意：这是@sinoui/use-rest-page-api 默认发送分页查询请求的格式，你的 RESTful API 如果不是这样的，那么你需要[定制分页查询请求](定制分页查询请求)。
+注意：这是@sinoui/use-rest-page-api 默认发送分页查询请求的格式，你的 RESTful API 如果不是这样的，那么你需要[定制分页查询请求](#定制分页查询请求)。
 
 #### 响应
 
@@ -110,7 +141,7 @@ GET /users?sex=male&size=10&page=0&sort=firstName&sort=lastName,desc
 - `number` - 当前第几页。从 0 开始。可以没有，默认与请求`page`参数一致
 - `totalPages` - 一共多少页。在限定大列表查询时比较有用，比如全文检索，查询到的数据数量与可以显示的数据数量可能会因为技术因素不能保持一致（拿百度、Google 查询实验一下就能理解），这时就可以额外指定一个不一样的`totalPages`，表示一共可以显示多少页的意思。可以没有，默认为`Math.ceil(totalElements / size)`
 
-注意：如果你的 API 响应的数据格式不是这样的，那么你可以[定制分页查询响应转换器](定制分页查询响应转换器)，将 API 响应数据转换成上面说的数据格式即可。
+注意：如果你的 API 响应的数据格式不是这样的，那么你可以[定制分页查询响应转换器](#定制分页查询响应转换器)，将 API 响应数据转换成上面说的数据格式即可。
 
 ### 获取单个数据
 
@@ -138,7 +169,7 @@ GET /users/1
 }
 ```
 
-注意：如果你的 API 响应数据格式不一致，你可以通过[定制请求单个数据响应转换器](定制请求单个数据响应转换器)，来转换成这样的数据格式。
+注意：如果你的 API 响应数据格式不一致，你可以通过[定制请求单个数据响应转换器](#定制请求单个数据响应转换器)，来转换成这样的数据格式。
 
 ### 新增数据
 
@@ -159,7 +190,7 @@ POST /users
 }
 ```
 
-注意：如果你的 API 请求数据格式不一致，你可以通过[定制新增请求的数据转换器](定制新增请求的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
+注意：如果你的 API 请求数据格式不一致，你可以通过[定制新增请求的数据转换器](#定制新增请求的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
 
 #### 响应
 
@@ -175,7 +206,7 @@ POST /users
 }
 ```
 
-注意：如果你的 API 响应数据格式不一致，你可以通过[定制新增响应的数据转换器](定制新增响应的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
+注意：如果你的 API 响应数据格式不一致，你可以通过[定制新增响应的数据转换器](#定制新增响应的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
 
 ### 更新数据
 
@@ -197,7 +228,7 @@ PUT /users/3
 }
 ```
 
-注意：如果你的 API 请求数据格式不一致，你可以通过[定制更新请求的数据转换器](定制更新请求的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
+注意：如果你的 API 请求数据格式不一致，你可以通过[定制更新请求的数据转换器](#定制更新请求的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
 
 #### 响应
 
@@ -213,7 +244,7 @@ PUT /users/3
 }
 ```
 
-注意：如果你的 API 响应数据格式不一致，你可以通过[定制更新响应的数据转换器](定制更新响应的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
+注意：如果你的 API 响应数据格式不一致，你可以通过[定制更新响应的数据转换器](#定制更新响应的数据转换器)，将上面的数据格式转换成满足你的 API 的数据格式。
 
 ### 删除数据
 
@@ -239,7 +270,7 @@ DELETE /users/1,2,3
 
 ## 数据结构
 
-### 内部数据结构：分页与排序信息
+### 分页与排序信息
 
 排序：
 
@@ -273,9 +304,7 @@ interface PageInfo {
 }
 ```
 
-### 分页查询
-
-#### 响应
+### 分页查询响应
 
 useRestPageApi 默认认为分页列表查询的数据结构如下：
 
@@ -305,7 +334,7 @@ interface PageResponse<T> {
 }
 ```
 
-## useRestPageApi 的参数说明
+## useRestPageApi 参数说明
 
 ```ts
 const dataSource = useRestPageApi<T, PageData>(
@@ -337,7 +366,7 @@ const dataSource = useRestPageApi<T, PageData>(
 - `defaultSearchParams` - 指定默认的查询条件。
 - `syncToUrl` - 如果为`true`，则会同步查询条件与浏览器 URL。默认为`false`。
 - `keyName` - 指定唯一键属性名，默认为`id`。
-- `useMultiDeleteApi` - 是否启动删除多条数据的 API。默认为`true`，表示启用。见[删除数据](删除数据)章节。
+- `useMultiDeleteApi` - 是否启动删除多条数据的 API。默认为`true`，表示启用。见[删除数据](#删除数据)章节。
 - `transformListReponse` - 指定分页列表查询结果的转换器。
 - `transformListRequest` - 指定分页查询条件转换器。
 - `transformFetchOneRequest` - 指定获取单条数据的请求数据转换器。
@@ -547,11 +576,11 @@ function transformSaveResponse(response: Response): User {
 
 ### 定制更新请求的数据转换器
 
-使用`transformUpdateRequest`定制更新请求。用法与[transformSaveRequest](定制新增请求的数据转换器)一致。
+使用`transformUpdateRequest`定制更新请求。用法与[transformSaveRequest](#定制新增请求的数据转换器)一致。
 
 ### 定制更新响应的数据转换器
 
-使用`transformUpdateResponse`定制更新请求。用法与[transformSaveResponse](定制新增响应的数据转换器)一致。
+使用`transformUpdateResponse`定制更新请求。用法与[transformSaveResponse](#定制新增响应的数据转换器)一致。
 
 ## dataSource 的属性和方法
 
@@ -561,7 +590,7 @@ const dataSource = useRestPageApi<User, ListRawResponse>('/users');
 
 我们的组件可以通过`dataSource`与查询结果、查询条件、RESTful API 进行沟通。
 
-### 与查询数据交互
+### 获取查询数据
 
 ```ts
  // 获取当前页列表数据
@@ -588,7 +617,7 @@ dataSource.removeItemById('3');
 const rawResponse = dataSource.rawResponse;
 ```
 
-### 与分页和排序交互
+### 分页和排序
 
 ```ts
 // 获取分页信息
