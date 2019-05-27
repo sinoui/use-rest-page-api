@@ -364,6 +364,7 @@ const dataSource = useRestPageApi<T, PageData>(
 
 - `baseUrl` - 指定 curd api 的基础`url`，如果不指定，则默认为`url`。
 - `defaultSearchParams` - 指定默认的查询条件。
+- `defaultSort` - 指定默认的排序规则。
 - `syncToUrl` - 如果为`true`，则会同步查询条件与浏览器 URL。默认为`false`。
 - `keyName` - 指定唯一键属性名，默认为`id`。
 - `useMultiDeleteApi` - 是否启动删除多条数据的 API。默认为`true`，表示启用。见[删除数据](#删除数据)章节。
