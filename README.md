@@ -49,7 +49,7 @@ yarn add @sinoui/use-rest-page-api
 或者
 
 ```shell
-npm add @sinoui/use-rest-page-api --save
+npm i --save @sinoui/use-rest-page-api
 ```
 
 ## 快速使用
