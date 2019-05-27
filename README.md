@@ -623,6 +623,8 @@ const isLoading = dataSource.isLoading;
 const isError = dataSource.isError;
 ```
 
+注意：这里介绍的`getItemById`、`updateItem`、`setItem`、`addItem`、`removeItemById`这些方法只会与`dataSource.items`进行交互，不会与 RESTful CRUD API 进行交互。如果需要与 RESTful CRUD API 交互，参见[与增删改查 API 交互](#与增删改查-api-交互)。
+
 ### 分页和排序
 
 ```ts
