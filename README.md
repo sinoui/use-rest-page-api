@@ -262,7 +262,7 @@ DELETE / users / 1
 DELETE /users/1,2,3
 ```
 
-注意：如果你的 API 不支持删除调教数据，那么请设置配置`options.seMultiDeleteApi`为`false`。
+注意：如果你的 API 不支持删除多条数据，那么请设置`options.useMultiDeleteApi`为`false`。
 
 #### 响应
 
