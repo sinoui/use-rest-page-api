@@ -85,6 +85,10 @@ export interface Options {
    */
   pageSize?: number;
   /**
+   * 指定排序字段
+   */
+  sorts?: SortInfo[];
+  /**
    * 指定默认查询条件
    */
   defaultSearchParams?: { [x: string]: string };
