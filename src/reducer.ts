@@ -41,6 +41,7 @@ function reducer<T>(state: State<T>, action: Action) {
               pageNo: action.payload.number,
               pageSize: action.payload.size,
               totalElements: action.payload.totalElements,
+              sorts: action.payload.sorts,
             }
           : { ...state.pagenation },
       };

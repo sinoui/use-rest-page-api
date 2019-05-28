@@ -42,7 +42,7 @@ function useRestPageApi<T>(
 
         dispatch({
           type: 'FETCH_SUCCESS',
-          payload: result,
+          payload: { ...result, sorts },
         });
 
         return result;
@@ -65,7 +65,7 @@ function useRestPageApi<T>(
   }, [doFetch]);
 
   /**
-   * 获取指定页码的数据
+   * 获取数据
    *
    * @param {number} pageNo 页码
    * @returns
@@ -87,7 +87,7 @@ function useRestPageApi<T>(
    *
    * @returns
    */
-  function nextPage() {
+  function nextPage(): Promise<PageResponse<T>> {
     const { pageNo, pageSize, totalElements, sorts } = state.pagenation;
     const totalPages = Math.ceil(totalElements / pageSize);
 
@@ -99,10 +99,20 @@ function useRestPageApi<T>(
    *
    * @returns
    */
-  function prevPage() {
+  function prevPage(): Promise<PageResponse<T>> {
     const { pageNo, pageSize, sorts } = state.pagenation;
 
     return doFetch(Math.max(0, pageNo - 1), pageSize, sorts);
+  }
+
+  /**
+   * 列表排序
+   *
+   * @param {SortInfo[]} sorts
+   * @returns {Promise<PageResponse<T>>}
+   */
+  function sortWith(sorts: SortInfo[]): Promise<PageResponse<T>> {
+    return doFetch(state.pagenation.pageNo, state.pagenation.pageSize, sorts);
   }
 
   return {
@@ -110,6 +120,7 @@ function useRestPageApi<T>(
     fetch,
     nextPage,
     prevPage,
+    sortWith,
   };
 }
 

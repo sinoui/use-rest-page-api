@@ -241,3 +241,44 @@ it('获取上一页数据', async () => {
   expect(result.current.pagenation.pageNo).toBe(0);
   expect(http.get).toHaveBeenCalledTimes(2);
 });
+
+it('列表排序', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '1', userName: '张三', age: 27 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test'),
+  );
+
+  expect(result.current.pagenation.sorts).toBeUndefined();
+
+  await waitForNextUpdate();
+
+  await result.current.sortWith([
+    { property: 'age', direction: 'desc' },
+    { property: 'userId', direction: 'asc' },
+  ]);
+
+  expect(result.current.pagenation.sorts).toEqual([
+    { property: 'age', direction: 'desc' },
+    { property: 'userId', direction: 'asc' },
+  ]);
+  expect(http.get).toBeCalledTimes(2);
+});
