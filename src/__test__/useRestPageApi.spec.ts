@@ -3,6 +3,11 @@ import http from '@sinoui/http';
 import useRestPageApi from '../useRestPageApi';
 
 jest.mock('@sinoui/http');
+
+afterEach(() => {
+  (http.get as jest.Mock).mockReset();
+});
+
 it('只有url时获取数据成功', async () => {
   (http.get as jest.Mock).mockResolvedValue({
     content: [{ userId: '1', userName: '张三' }],
@@ -90,4 +95,149 @@ it('自定义每页条数', async () => {
   );
 
   expect(result.current.pagenation.pageSize).toBe(50);
+});
+
+it('fetch方法获取数据', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '王五', age: 20 },
+      ],
+      number: 1,
+      size: 10,
+      totalElements: 13,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '王五', age: 20 },
+      ],
+      number: 1,
+      size: 15,
+      totalElements: 18,
+    });
+  const { result } = renderHook(() => useRestPageApi('/test'));
+
+  expect(result.current.pagenation.pageNo).toBe(0);
+
+  await result.current.fetch(1);
+
+  expect(result.current.pagenation.pageNo).toBe(1);
+
+  await result.current.fetch(undefined, 15);
+
+  expect(result.current.pagenation.pageSize).toBe(15);
+  expect(http.get).toHaveBeenCalledTimes(3);
+});
+
+it('获取下一页数据', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '李四', age: 20 },
+        { userId: '4', userName: '李四', age: 20 },
+        { userId: '5', userName: '李四', age: 20 },
+        { userId: '6', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 17,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '11', userName: '李四', age: 20 },
+        { userId: '12', userName: '李四', age: 20 },
+        { userId: '13', userName: '李四', age: 20 },
+        { userId: '14', userName: '李四', age: 20 },
+        { userId: '15', userName: '李四', age: 20 },
+        { userId: '16', userName: '李四', age: 20 },
+        { userId: '17', userName: '李四', age: 20 },
+      ],
+      number: 1,
+      size: 10,
+      totalElements: 17,
+    });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test'),
+  );
+
+  expect(result.current.pagenation.pageNo).toBe(0);
+
+  await waitForNextUpdate();
+
+  expect(result.current.pagenation.pageNo).toBe(0);
+
+  await result.current.nextPage();
+
+  expect(result.current.pagenation.pageNo).toBe(1);
+});
+
+it('获取上一页数据', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '11', userName: '李四', age: 20 },
+        { userId: '12', userName: '李四', age: 20 },
+        { userId: '13', userName: '李四', age: 20 },
+        { userId: '14', userName: '李四', age: 20 },
+        { userId: '15', userName: '李四', age: 20 },
+        { userId: '16', userName: '李四', age: 20 },
+        { userId: '17', userName: '李四', age: 20 },
+      ],
+      totalElements: 17,
+      number: 1,
+      size: 10,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '李四', age: 20 },
+        { userId: '4', userName: '李四', age: 20 },
+        { userId: '5', userName: '李四', age: 20 },
+        { userId: '6', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 17,
+    });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test'),
+  );
+
+  expect(result.current.pagenation.pageNo).toBe(0);
+
+  await waitForNextUpdate();
+
+  expect(result.current.pagenation.pageNo).toBe(1);
+  expect(http.get).toHaveBeenCalledTimes(1);
+
+  await result.current.prevPage();
+
+  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(http.get).toHaveBeenCalledTimes(2);
 });

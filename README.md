@@ -34,7 +34,7 @@
   - [定制新增响应的数据转换器](#定制新增响应的数据转换器)
   - [定制更新请求的数据转换器](#定制更新请求的数据转换器)
   - [定制更新响应的数据转换器](#定制更新响应的数据转换器)
-- [dataSurce 的属性和方法](#datasource-的属性和方法)
+- [dataSource 的属性和方法](#datasource-的属性和方法)
   - [获取查询数据](#获取查询数据)
   - [分页和排序](#分页和排序)
   - [列表查询](#列表查询)
@@ -645,16 +645,14 @@ dataSource.prevPage();
 dataSource.fetch(9);
 
 // 按照姓氏倒序排序
-dataSource.sortWith('firstName', 'desc', 'lastName', 'asc');
-// or
 dataSource.sortWith([
   {
     property: 'firstName',
-    sort: 'desc',
+    direction: 'desc',
   },
   {
     property: 'lastName',
-    sort: 'asc',
+    direction: 'asc',
   },
 ]);
 ```
