@@ -19,7 +19,7 @@ export interface State<T> {
  * @param state 状态
  * @param action 动作
  */
-function dataFetchReducer<T>(state: State<T>, action: Action) {
+function reducer<T>(state: State<T>, action: Action) {
   switch (action.type) {
     case 'FETCH_INIT':
       return {
@@ -55,4 +55,4 @@ function dataFetchReducer<T>(state: State<T>, action: Action) {
   }
 }
 
-export default dataFetchReducer;
+export default reducer;

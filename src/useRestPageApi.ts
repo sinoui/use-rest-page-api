@@ -2,14 +2,14 @@ import { useEffect, useReducer } from 'react';
 import qs from 'qs';
 import { query } from './apis';
 import { PageResponse, Options, SortInfo } from './types';
-import dataFetchReducer from './dataFetchReducer';
+import reducer from './reducer';
 
 function useRestPageApi<T>(
   url: string,
   defaultValue: T[] = [],
   options?: Options,
 ) {
-  const [state, dispatch] = useReducer(dataFetchReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     isError: false,
     isLoading: false,
     items: defaultValue,
