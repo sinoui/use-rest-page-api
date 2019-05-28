@@ -282,3 +282,29 @@ it('列表排序', async () => {
   ]);
   expect(http.get).toBeCalledTimes(2);
 });
+
+describe('不与后端交互的操作', () => {
+  async function init() {
+    (http.get as jest.Mock).mockResolvedValue({
+      content: [{ userId: '1', userName: '张三' }],
+      number: 0,
+      size: 1,
+      totalElements: 1,
+    });
+
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useRestPageApi('/test', undefined, { keyName: 'userId' }),
+    );
+
+    await waitForNextUpdate();
+
+    return result;
+  }
+
+  it('获取指定id的数据', async () => {
+    const result = await init();
+    const item = result.current.getItemById('1');
+
+    expect(item).toEqual({ userId: '1', userName: '张三' });
+  });
+});

@@ -9,6 +9,7 @@ function useRestPageApi<T>(
   defaultValue: T[] = [],
   options?: Options,
 ) {
+  const keyName = options && options.keyName ? options.keyName : 'id';
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
     pageNo: (options && options.pageNo) || 0,
@@ -115,12 +116,23 @@ function useRestPageApi<T>(
     return doFetch(state.pagenation.pageNo, state.pagenation.pageSize, sorts);
   }
 
+  /**
+   * 获取指定id的数据
+   *
+   * @param {string} itemId
+   * @returns {T}
+   */
+  function getItemById(itemId: string): T {
+    return state.items.find((item) => item[keyName] === itemId);
+  }
+
   return {
     ...state,
     fetch,
     nextPage,
     prevPage,
     sortWith,
+    getItemById,
   };
 }
 
