@@ -57,6 +57,8 @@
     "husky": "^2.3.0",
     "lint-staged": "^8.1.7",
     "prettier": "^1.17.1",
+    "react-hooks-testing-library": "^0.5.0",
+    "react-test-renderer": "^16.8.6",
     "ts-lib-tools": "^0.1.7",
     "typescript": "^3.4.5"
   }

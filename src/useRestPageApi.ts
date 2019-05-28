@@ -17,7 +17,7 @@ function useRestPageApi<T>(
       pageSize: (options && options.pageSize) || 15,
       pageNo: (options && options.pageNo) || 0,
       totalElements: defaultValue.length || 0,
-      sorts: (options && options.sorts) || [],
+      sorts: options && options.sorts,
     },
   });
 

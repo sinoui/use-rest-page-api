@@ -32,15 +32,15 @@ function reducer<T>(state: State<T>, action: Action) {
         ...state,
         isLoading: false,
         isError: false,
-        items: action.payload.result
-          ? [...state.items, ...action.payload.result.content]
+        items: action.payload
+          ? [...state.items, ...action.payload.content]
           : [...state.items],
-        pagenation: action.payload.result
+        pagenation: action.payload
           ? {
               ...state.pagenation,
-              pageNo: action.payload.result.number,
-              pageSize: action.payload.result.size,
-              totalElements: action.payload.result.totalElements,
+              pageNo: action.payload.number,
+              pageSize: action.payload.size,
+              totalElements: action.payload.totalElements,
             }
           : { ...state.pagenation },
       };
