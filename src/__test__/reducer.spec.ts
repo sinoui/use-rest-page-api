@@ -25,3 +25,12 @@ it('type为FETCH_SUCCESS时,paload为空，此时items和pagenation保持不变'
 
   expect(thirdState).toEqual(newState);
 });
+
+it('如果要更新的item不存在，则状态不变', () => {
+  const state = reducer(defaultState, {
+    type: 'UPDATE_ITEM',
+    payload: { item: { userId: '1', age: 26 }, keyName: 'userId' },
+  });
+
+  expect(state).toEqual(defaultState);
+});

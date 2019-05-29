@@ -123,7 +123,19 @@ function useRestPageApi<T>(
    * @returns {T}
    */
   function getItemById(itemId: string): T {
-    return state.items.find((item) => item[keyName] === itemId);
+    return state.items.find((item: any) => item[keyName] === itemId);
+  }
+
+  /**
+   * 更新数据
+   *
+   * @param {T} item
+   * @returns {T}
+   */
+  function updateItem(item: T): T {
+    dispatch({ type: 'UPDATE_ITEM', payload: { item, keyName } });
+
+    return item;
   }
 
   return {
@@ -133,6 +145,7 @@ function useRestPageApi<T>(
     prevPage,
     sortWith,
     getItemById,
+    updateItem,
   };
 }
 

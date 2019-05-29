@@ -13,6 +13,30 @@ export interface State<T> {
   pagenation: PageInfo;
 }
 
+function updateItem<T>(state: State<T>, action: Action) {
+  const idx = state.items.findIndex(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (item: any) =>
+      item[action.payload.keyName] ===
+      action.payload.item[action.payload.keyName],
+  );
+
+  if (idx !== -1) {
+    const newItems = [
+      ...state.items.slice(0, idx),
+      action.payload.item,
+      ...state.items.slice(idx + 1),
+    ];
+
+    return {
+      ...state,
+      items: newItems,
+    };
+  }
+
+  return state;
+}
+
 /**
  * 获取数据的reducer
  *
@@ -51,6 +75,8 @@ function reducer<T>(state: State<T>, action: Action) {
         isError: true,
         isLoading: false,
       };
+    case 'UPDATE_ITEM':
+      return updateItem(state, action);
     default:
       return state;
   }

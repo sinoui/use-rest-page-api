@@ -307,4 +307,13 @@ describe('不与后端交互的操作', () => {
 
     expect(item).toEqual({ userId: '1', userName: '张三' });
   });
+
+  it('更新item', async () => {
+    const result = await init();
+
+    const newUser = { userId: '1', userName: '张三', age: 26 };
+    result.current.updateItem(newUser);
+
+    expect(result.current.items).toEqual([{ ...newUser }]);
+  });
 });
