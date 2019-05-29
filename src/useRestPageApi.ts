@@ -186,7 +186,9 @@ function useRestPageApi<T>(
    * @param {string} itemId
    */
   function removeItemById(itemId: string) {
-    dispatch({ type: 'REMOVE_ITEM', payload: { ids: [itemId], keyName } });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const idx = state.items.findIndex((item: any) => item[keyName] === itemId);
+    dispatch({ type: 'REMOVE_ITEM', payload: [idx] });
   }
 
   /**
@@ -195,9 +197,7 @@ function useRestPageApi<T>(
    * @param {number} index
    */
   function removeItemAt(index: number) {
-    const id = state.items[index] ? state.items[index][keyName] : '';
-
-    dispatch({ type: 'REMOVE_ITEM', payload: { ids: [id], keyName } });
+    dispatch({ type: 'REMOVE_ITEM', payload: [index] });
   }
 
   /**
@@ -206,7 +206,11 @@ function useRestPageApi<T>(
    * @param {string[]} ids
    */
   function removeItemsByIds(ids: string[]) {
-    dispatch({ type: 'REMOVE_ITEM', payload: { ids, keyName } });
+    const idxs = ids.map((id) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      state.items.findIndex((item: any) => item[keyName] === id),
+    );
+    dispatch({ type: 'REMOVE_ITEM', payload: idxs });
   }
 
   return {

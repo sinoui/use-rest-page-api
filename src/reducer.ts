@@ -55,10 +55,7 @@ function updateItem<T>(state: State<T>, action: Action) {
  */
 function removeItem<T>(state: State<T>, action: Action) {
   const items = state.items.filter(
-    (item: any) =>
-      action.payload.ids.findIndex(
-        (id: string) => item[action.payload.keyName] === id,
-      ) === -1,
+    (_item, index: number) => !action.payload.includes(index),
   );
 
   return {

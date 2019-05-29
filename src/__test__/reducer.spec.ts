@@ -60,14 +60,14 @@ it('删除数据', () => {
 
   const newState = reducer(state, {
     type: 'REMOVE_ITEM',
-    payload: { ids: ['1'], keyName: 'userId' },
+    payload: [0],
   });
 
   expect(newState.items.length).toBe(9);
 
   const thirdState = reducer(newState, {
     type: 'REMOVE_ITEM',
-    payload: { ids: ['3', '5', '7'], keyName: 'userId' },
+    payload: [3, 5, 7],
   });
 
   expect(thirdState.items.length).toBe(6);

@@ -687,7 +687,7 @@ dataSource.setDefaultSearchParams({ sex: 'female' }, false);
 dataSource.fetch(4);
 
 // 重新获取当前页的数据
-dataSource.refresh();
+dataSource.reload();
 ```
 
 `fetch()`方法是查询列表的基础方法，它的语法格式如下：
