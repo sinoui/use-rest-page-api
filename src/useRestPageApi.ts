@@ -158,6 +158,18 @@ function useRestPageApi<T>(
     return newItem;
   }
 
+  /**
+   * 新增一条列表数据
+   *
+   * @param {T} item
+   */
+  function addItem(item: T) {
+    dispatch({
+      type: 'ADD_ITEM',
+      payload: item,
+    });
+  }
+
   return {
     ...state,
     fetch,
@@ -167,6 +179,7 @@ function useRestPageApi<T>(
     getItemById,
     updateItem,
     setItem,
+    addItem,
   };
 }
 

@@ -77,6 +77,11 @@ function reducer<T>(state: State<T>, action: Action) {
       };
     case 'UPDATE_ITEM':
       return updateItem(state, action);
+    case 'ADD_ITEM':
+      return {
+        ...state,
+        items: [...state.items, action.payload],
+      };
     default:
       return state;
   }

@@ -344,4 +344,16 @@ describe('不与后端交互的操作', () => {
 
     expect(result.current.items[0].birthday).toBe('1993-10-16');
   });
+
+  it('新增数据', async () => {
+    const result = await init();
+
+    expect(result.current.items).toEqual([{ userId: '1', userName: '张三' }]);
+
+    result.current.addItem({ userId: '2', userName: '李四' });
+    expect(result.current.items).toEqual([
+      { userId: '1', userName: '张三' },
+      { userId: '2', userName: '李四' },
+    ]);
+  });
 });
