@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useCallback, useRef } from 'react';
-import http from '@sinoui/http';
+import http, { HttpResponse } from '@sinoui/http';
 import { PageResponse, Options, SortInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
@@ -9,6 +9,8 @@ function useRestPageApi<T>(
   defaultValue: T[] = [],
   options?: Options,
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let rawResponse: HttpResponse = {} as any;
   const keyName = options && options.keyName ? options.keyName : 'id';
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
@@ -46,6 +48,7 @@ function useRestPageApi<T>(
           payload: { ...result, sorts },
         });
 
+        rawResponse = result as any;
         return result;
       } catch (e) {
         dispatch({ type: 'FETCH_FAILURE' });
@@ -189,6 +192,7 @@ function useRestPageApi<T>(
 
   return {
     ...state,
+    rawResponse,
     fetch,
     nextPage,
     prevPage,
