@@ -169,6 +169,14 @@ function useRestPageApi<T>(
       payload: item,
     });
   }
+  /**
+   * 根据id删除一条数据
+   *
+   * @param {string} itemId
+   */
+  function removeItemById(itemId: string) {
+    dispatch({ type: 'REMOVE_ITEM', payload: { itemId, keyName } });
+  }
 
   return {
     ...state,
@@ -180,6 +188,7 @@ function useRestPageApi<T>(
     updateItem,
     setItem,
     addItem,
+    removeItemById,
   };
 }
 

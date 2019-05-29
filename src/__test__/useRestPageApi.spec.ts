@@ -356,4 +356,18 @@ describe('不与后端交互的操作', () => {
       { userId: '2', userName: '李四' },
     ]);
   });
+
+  it('删除一条数据', async () => {
+    const result = await init();
+
+    expect(result.current.items).toEqual([{ userId: '1', userName: '张三' }]);
+
+    result.current.removeItemById('1');
+
+    expect(result.current.items.length).toBe(0);
+
+    result.current.removeItemById('1');
+
+    expect(result.current.items.length).toBe(0);
+  });
 });

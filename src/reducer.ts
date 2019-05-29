@@ -12,7 +12,14 @@ export interface State<T> {
   items: T[];
   pagenation: PageInfo;
 }
-
+/**
+ * 更新数据时更新state
+ *
+ * @template T
+ * @param {State<T>} state
+ * @param {Action} action
+ * @returns
+ */
 function updateItem<T>(state: State<T>, action: Action) {
   const idx = state.items.findIndex(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +32,27 @@ function updateItem<T>(state: State<T>, action: Action) {
     const newItems = [
       ...state.items.slice(0, idx),
       action.payload.item,
+      ...state.items.slice(idx + 1),
+    ];
+
+    return {
+      ...state,
+      items: newItems,
+    };
+  }
+
+  return state;
+}
+
+function removeItem<T>(state: State<T>, action: Action) {
+  const idx = state.items.findIndex(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (item: any) => item[action.payload.keyName] === action.payload.itemId,
+  );
+
+  if (idx !== -1) {
+    const newItems = [
+      ...state.items.slice(0, idx),
       ...state.items.slice(idx + 1),
     ];
 
@@ -82,6 +110,8 @@ function reducer<T>(state: State<T>, action: Action) {
         ...state,
         items: [...state.items, action.payload],
       };
+    case 'REMOVE_ITEM':
+      return removeItem(state, action);
     default:
       return state;
   }
