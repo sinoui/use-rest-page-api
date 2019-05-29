@@ -175,7 +175,16 @@ function useRestPageApi<T>(
    * @param {string} itemId
    */
   function removeItemById(itemId: string) {
-    dispatch({ type: 'REMOVE_ITEM', payload: { itemId, keyName } });
+    dispatch({ type: 'REMOVE_ITEM', payload: { ids: [itemId], keyName } });
+  }
+
+  /**
+   * 删除多条数据
+   *
+   * @param {string[]} ids
+   */
+  function removeItemsByIds(ids: string[]) {
+    dispatch({ type: 'REMOVE_ITEM', payload: { ids, keyName } });
   }
 
   return {
@@ -189,6 +198,7 @@ function useRestPageApi<T>(
     setItem,
     addItem,
     removeItemById,
+    removeItemsByIds,
   };
 }
 

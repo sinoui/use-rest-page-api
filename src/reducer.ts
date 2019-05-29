@@ -44,25 +44,27 @@ function updateItem<T>(state: State<T>, action: Action) {
   return state;
 }
 
+/**
+ * 删除数据
+ *
+ * @template T
+ * @param {State<T>} state
+ * @param {Action} action
+ * @returns
+ */
 function removeItem<T>(state: State<T>, action: Action) {
-  const idx = state.items.findIndex(
+  const items = state.items.filter(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (item: any) => item[action.payload.keyName] === action.payload.itemId,
+    (item: any) =>
+      action.payload.ids.findIndex(
+        (id: string) => item[action.payload.keyName] === id,
+      ) === -1,
   );
 
-  if (idx !== -1) {
-    const newItems = [
-      ...state.items.slice(0, idx),
-      ...state.items.slice(idx + 1),
-    ];
-
-    return {
-      ...state,
-      items: newItems,
-    };
-  }
-
-  return state;
+  return {
+    ...state,
+    items,
+  };
 }
 
 /**

@@ -370,4 +370,19 @@ describe('不与后端交互的操作', () => {
 
     expect(result.current.items.length).toBe(0);
   });
+
+  it('删除多条数据', async () => {
+    const result = await init();
+
+    expect(result.current.items.length).toBe(1);
+
+    result.current.addItem({ userId: '2', userName: '李四' });
+    result.current.addItem({ userId: '3', userName: '王五' });
+    result.current.addItem({ userId: '4', userName: '赵六' });
+
+    expect(result.current.items.length).toBe(4);
+    result.current.removeItemsByIds(['2', '4']);
+
+    expect(result.current.items.length).toBe(2);
+  });
 });
