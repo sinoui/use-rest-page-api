@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PageInfo } from './types';
 
 export interface Action {
@@ -54,7 +55,6 @@ function updateItem<T>(state: State<T>, action: Action) {
  */
 function removeItem<T>(state: State<T>, action: Action) {
   const items = state.items.filter(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (item: any) =>
       action.payload.ids.findIndex(
         (id: string) => item[action.payload.keyName] === id,
@@ -114,6 +114,11 @@ function reducer<T>(state: State<T>, action: Action) {
       };
     case 'REMOVE_ITEM':
       return removeItem(state, action);
+    case 'SET_ITEMS':
+      return {
+        ...state,
+        items: action.payload,
+      };
     default:
       return state;
   }

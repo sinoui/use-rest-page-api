@@ -345,6 +345,22 @@ describe('不与后端交互的操作', () => {
     expect(result.current.items[0].birthday).toBe('1993-10-16');
   });
 
+  it('一组数据字段更新', async () => {
+    const result = await init();
+    result.current.addItem({ userId: '2', userName: '李四' });
+    result.current.addItem({ userId: '3', userName: '王五' });
+
+    result.current.setItems([
+      { userId: '2', userName: '赵六' },
+      { userId: '3', age: 26 },
+    ]);
+
+    expect(result.current.items).toEqual([
+      { userId: '2', userName: '赵六' },
+      { userId: '3', age: 26 },
+    ]);
+  });
+
   it('新增数据', async () => {
     const result = await init();
 
@@ -393,6 +409,12 @@ describe('不与后端交互的操作', () => {
       { userId: '1', userName: '张三' },
       { userId: '2', userName: '李四' },
     ]);
+
+    result.current.addItem({ userName: '王五' });
+
+    expect(result.current.items.length).toBe(3);
+
+    result.current.removeItemAt(2);
   });
 
   it('删除多条数据', async () => {

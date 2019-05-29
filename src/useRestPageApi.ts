@@ -160,6 +160,14 @@ function useRestPageApi<T>(
 
     return newItem;
   }
+  /**
+   * 替换数据
+   *
+   * @param {object[]} itemsInfo
+   */
+  function setItems(itemsInfo: object[]) {
+    dispatch({ type: 'SET_ITEMS', payload: itemsInfo });
+  }
 
   /**
    * 新增一条列表数据
@@ -211,6 +219,7 @@ function useRestPageApi<T>(
     getItemById,
     updateItem,
     setItem,
+    setItems,
     addItem,
     removeItemById,
     removeItemAt,

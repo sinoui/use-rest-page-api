@@ -608,7 +608,7 @@ dataSource.updateItem(newUser);
 dataSource.setItem('1', 'sex', 'female');
 dataSource.setItem('1', { birthday: '2000-10-12' });
 
-//部分更新多条数据
+//替换items
 dataSource.setItems([{id:'1',birthday:'2019-01-01'},{id:'2',age:32}])
 
 // 新增
