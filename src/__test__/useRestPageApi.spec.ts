@@ -371,6 +371,30 @@ describe('不与后端交互的操作', () => {
     expect(result.current.items.length).toBe(0);
   });
 
+  it('删除指定行的数据', async () => {
+    const result = await init();
+
+    expect(result.current.items.length).toBe(1);
+
+    result.current.addItem({ userId: '2', userName: '李四' });
+    result.current.addItem({ userId: '3', userName: '王五' });
+    expect(result.current.items.length).toBe(3);
+
+    result.current.removeItemAt(2);
+    expect(result.current.items.length).toBe(2);
+    expect(result.current.items).toEqual([
+      { userId: '1', userName: '张三' },
+      { userId: '2', userName: '李四' },
+    ]);
+
+    result.current.removeItemAt(2);
+
+    expect(result.current.items).toEqual([
+      { userId: '1', userName: '张三' },
+      { userId: '2', userName: '李四' },
+    ]);
+  });
+
   it('删除多条数据', async () => {
     const result = await init();
 

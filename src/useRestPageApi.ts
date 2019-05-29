@@ -182,6 +182,17 @@ function useRestPageApi<T>(
   }
 
   /**
+   * 删除指定行的数据
+   *
+   * @param {number} index
+   */
+  function removeItemAt(index: number) {
+    const id = state.items[index] ? state.items[index][keyName] : '';
+
+    dispatch({ type: 'REMOVE_ITEM', payload: { ids: [id], keyName } });
+  }
+
+  /**
    * 删除多条数据
    *
    * @param {string[]} ids
@@ -202,6 +213,7 @@ function useRestPageApi<T>(
     setItem,
     addItem,
     removeItemById,
+    removeItemAt,
     removeItemsByIds,
   };
 }

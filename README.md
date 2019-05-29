@@ -608,6 +608,9 @@ dataSource.updateItem(newUser);
 dataSource.setItem('1', 'sex', 'female');
 dataSource.setItem('1', { birthday: '2000-10-12' });
 
+//部分更新多条数据
+dataSource.setItems([{id:'1',birthday:'2019-01-01'},{id:'2',age:32}])
+
 // 新增
 dataSource.addItem({id: '5', firstName: '赵'， lastName: '六'});
 
@@ -616,6 +619,9 @@ dataSource.removeItemById('3');
 
 // 删除多条数据
 dataSource.removeItemsByIds(['1', '2', '3']);
+
+// 删除指定行的数据,从0开始
+dataSource.removeItemAt(5)
 
 // 获取原始响应数据
 const rawResponse = dataSource.rawResponse;
@@ -727,3 +733,4 @@ await dataSource.remove(['1', '2', '3']);
 ```ts
 const user = await dataSource.get('1', false);
 ```
+
