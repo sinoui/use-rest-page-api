@@ -316,4 +316,32 @@ describe('不与后端交互的操作', () => {
 
     expect(result.current.items).toEqual([{ ...newUser }]);
   });
+
+  it('部分字段更新', async () => {
+    const result = await init();
+
+    const newUser = result.current.setItem('1', {
+      age: 26,
+      birthday: '1993-08-16',
+    });
+
+    expect(newUser).toEqual({
+      userId: '1',
+      userName: '张三',
+      age: 26,
+      birthday: '1993-08-16',
+    });
+    expect(result.current.items).toEqual([
+      {
+        userId: '1',
+        userName: '张三',
+        age: 26,
+        birthday: '1993-08-16',
+      },
+    ]);
+
+    result.current.setItem('1', { birthday: '1993-10-16' });
+
+    expect(result.current.items[0].birthday).toBe('1993-10-16');
+  });
 });

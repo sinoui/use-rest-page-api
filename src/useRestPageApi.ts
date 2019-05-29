@@ -138,6 +138,26 @@ function useRestPageApi<T>(
     return item;
   }
 
+  /**
+   * 更新指定数据的部分字段
+   *
+   * @param {string} itemId 数据key值
+   * @param {object} itemInfo 要更新的字段信息
+   * @returns {T}
+   */
+  function setItem(itemId: string, itemInfo: object): T {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const item = state.items.find((data: any) => data[keyName] === itemId);
+    const newItem = { ...item, ...itemInfo };
+
+    dispatch({
+      type: 'UPDATE_ITEM',
+      payload: { item: newItem, keyName },
+    });
+
+    return newItem;
+  }
+
   return {
     ...state,
     fetch,
@@ -146,6 +166,7 @@ function useRestPageApi<T>(
     sortWith,
     getItemById,
     updateItem,
+    setItem,
   };
 }
 
