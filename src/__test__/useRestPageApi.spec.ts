@@ -6,6 +6,9 @@ jest.mock('@sinoui/http');
 
 afterEach(() => {
   (http.get as jest.Mock).mockReset();
+  (http.post as jest.Mock).mockReset();
+  (http.put as jest.Mock).mockReset();
+  (http.delete as jest.Mock).mockReset();
 });
 
 it('只有url时获取数据成功', async () => {
@@ -666,4 +669,85 @@ it('更新数据详情', async () => {
   });
 
   result.current.update({ userId: '1', adress: '北京' });
+});
+
+it('删除数据，与crud交互', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '1', userName: '张三', age: 27 },
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '3', userName: '李四', age: 20 },
+      { userId: '4', userName: '李四', age: 20 },
+      { userId: '5', userName: '李四', age: 20 },
+      { userId: '6', userName: '李四', age: 20 },
+      { userId: '7', userName: '李四', age: 20 },
+      { userId: '8', userName: '李四', age: 20 },
+      { userId: '9', userName: '李四', age: 20 },
+      { userId: '10', userName: '李四', age: 20 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+
+  (http.delete as jest.Mock)
+    .mockResolvedValueOnce('删除成功')
+    .mockResolvedValueOnce('删除成功')
+    .mockResolvedValueOnce('删除成功')
+    .mockResolvedValueOnce('删除成功')
+    .mockRejectedValueOnce(new Error('失败'));
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, { keyName: 'userId' }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.items.length).toBe(10);
+
+  await result.current.remove('1', false);
+
+  expect(result.current.items.length).toBe(10);
+
+  await result.current.remove('2');
+
+  expect(result.current.items.length).toBe(9);
+
+  await result.current.remove(['3', '4'], false);
+
+  expect(result.current.items.length).toBe(9);
+
+  await result.current.remove(['5', '6']);
+
+  expect(result.current.items.length).toBe(7);
+
+  result.current.remove('7');
+});
+
+it('配置不允许删除多项', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      useMultiDeleteApi: false,
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.items.length).toBe(2);
+
+  await result.current.remove(['1', '2'], false);
+
+  expect(result.current.items.length).toBe(2);
+  expect(http.delete).toHaveBeenCalledTimes(0);
 });

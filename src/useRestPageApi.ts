@@ -217,15 +217,15 @@ function useRestPageApi<T>(
    * 获取一条数据详情信息
    *
    * @param {string} id
-   * @param {boolean} [isNeeUpdate=true]
+   * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function get(id: string, isNeeUpdate: boolean = true): Promise<T> {
+  async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
     try {
       const result: T = await http.get(`${url}/${id}`);
 
-      if (isNeeUpdate) {
-        dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
+      if (isNeedUpdate) {
+        updateItem(result);
       }
 
       return result;
@@ -237,15 +237,15 @@ function useRestPageApi<T>(
    * 新增数据
    *
    * @param {T} itemInfo
-   * @param {boolean} [isNeeUpdate=true]
+   * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function save(itemInfo: T, isNeeUpdate: boolean = true): Promise<T> {
+  async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
       const result: T = await http.post(url, itemInfo);
 
-      if (isNeeUpdate) {
-        dispatch({ type: 'ADD_ITEM', payload: result });
+      if (isNeedUpdate) {
+        addItem(result);
       }
 
       return result;
@@ -257,15 +257,45 @@ function useRestPageApi<T>(
    * 更新数据信息
    *
    * @param {T} itemInfo
-   * @param {boolean} [isNeeUpdate=true]
+   * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function update(itemInfo: T, isNeeUpdate: boolean = true): Promise<T> {
+  async function update(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
       const result: T = await http.put(url, itemInfo);
 
-      if (isNeeUpdate) {
-        dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
+      if (isNeedUpdate) {
+        updateItem(result);
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function remove(
+    ids: string | string[],
+    isNeedUpdate: boolean = true,
+  ): Promise<T> {
+    const { useMultiDeleteApi = true } = options || {};
+
+    try {
+      let result: T = null as any;
+      if (typeof ids !== 'string') {
+        if (useMultiDeleteApi) {
+          result = await http.delete(`${url}/${ids.join(',')}`);
+
+          if (isNeedUpdate) {
+            removeItemsByIds(ids);
+          }
+        }
+      } else {
+        result = await http.delete(`${url}/${ids}`);
+
+        if (isNeedUpdate) {
+          removeItemById(ids as string);
+        }
       }
 
       return result;
@@ -292,6 +322,7 @@ function useRestPageApi<T>(
     get,
     save,
     update,
+    remove,
   };
 }
 
