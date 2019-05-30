@@ -1,16 +1,16 @@
-import { useEffect, useReducer, useCallback, useRef } from 'react';
-import http, { HttpResponse } from '@sinoui/http';
+import { useReducer, useCallback, useRef } from 'react';
+import http from '@sinoui/http';
 import { PageResponse, Options, SortInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
+import useEffect2 from './useEffect2';
 
-function useRestPageApi<T>(
+function useRestPageApi<T, RawResponse = PageResponse<T>>(
   url: string,
   defaultValue: T[] = [],
   options?: Options,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let rawResponse: HttpResponse = {} as any;
+  const rawResponseRef = useRef<RawResponse>();
   const keyName = options && options.keyName ? options.keyName : 'id';
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
@@ -18,9 +18,6 @@ function useRestPageApi<T>(
     totalElements: defaultValue.length || 0,
     sorts: options && options.defaultSort,
   };
-
-  const defaultPaginationRef = useRef(defaultPagination);
-
   const [state, dispatch] = useReducer(reducer, {
     isError: false,
     isLoading: false,
@@ -48,7 +45,7 @@ function useRestPageApi<T>(
           payload: { ...result, sorts },
         });
 
-        rawResponse = result as any;
+        rawResponseRef.current = result as any;
         return result;
       } catch (e) {
         dispatch({ type: 'FETCH_FAILURE' });
@@ -58,15 +55,13 @@ function useRestPageApi<T>(
     [url],
   );
 
-  useEffect(() => {
-    if (defaultPaginationRef.current) {
-      doFetch(
-        defaultPaginationRef.current.pageNo,
-        defaultPaginationRef.current.pageSize,
-        defaultPaginationRef.current.sorts,
-      );
-    }
-  }, [doFetch]);
+  useEffect2(() => {
+    doFetch(
+      defaultPagination.pageNo,
+      defaultPagination.pageSize,
+      defaultPagination.sorts,
+    );
+  }, [url]);
 
   /**
    * 获取数据
@@ -306,7 +301,7 @@ function useRestPageApi<T>(
 
   return {
     ...state,
-    rawResponse,
+    rawResponse: rawResponseRef.current,
     fetch,
     nextPage,
     prevPage,
