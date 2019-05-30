@@ -71,7 +71,7 @@ export interface PageResponse<T> {
 /**
  * useRestPageApi配置信息
  */
-export interface Options {
+export interface Options<T> {
   /**
    * 指定`curd api`的基础`url`，如果不指定，则默认为`url`
    */
@@ -107,27 +107,26 @@ export interface Options {
   /**
    * 指定分页列表查询结果的转换器
    */
-  transformListReponse?: (response: HttpResponse) => void;
+  transformListReponse?: (response: HttpResponse) => PageResponse<any>;
   /**
    * 指定分页查询条件转换器
    */
-  transformListRequest?: (request: HttpRequestConfig) => void;
-  /**
-   * 指定获取单条数据的请求数据转换器
-   */
-  transformFetchOneRequest?: (response: HttpResponse) => void;
+  transformListRequest?: (
+    searchParams?: { [x: string]: string },
+    pageInfo?: { pageNo: number; pageSize: number; sorts?: SortInfo[] },
+  ) => void;
   /**
    * 指定获取单条数据的响应数据转换器
    */
-  transformFetchOneResponse?: (response: HttpRequestConfig) => void;
+  transformFetchOneResponse?: (response: HttpResponse) => T;
   /**
    * 指定新增数据的请求数据转换器
    */
-  transformSaveRequest?: (request: HttpRequestConfig) => void;
+  transformSaveRequest?: (request: HttpRequestConfig) => T;
   /**
    * 指定新增数据的响应数据转换器
    */
-  transformSaveResponse?: (response: HttpResponse) => void;
+  transformSaveResponse?: (response: HttpResponse) => T;
   /**
    * 指定更新数据的请求数据转换器
    */
@@ -135,5 +134,5 @@ export interface Options {
   /**
    * 指定更新数据的响应数据转换器
    */
-  transformUpdateResponse?: (response: HttpResponse) => void;
+  transformUpdateResponse?: (response: HttpResponse) => T;
 }

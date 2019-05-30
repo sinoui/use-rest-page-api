@@ -1,5 +1,6 @@
 import { renderHook } from 'react-hooks-testing-library';
-import http from '@sinoui/http';
+import http, { HttpResponse } from '@sinoui/http';
+import qs from 'qs';
 import useRestPageApi from '../useRestPageApi';
 
 jest.mock('@sinoui/http');
@@ -814,4 +815,205 @@ it('重置查询条件并完成查询', () => {
   expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
     '/test?userId=1&page=0&size=15',
   );
+});
+
+it('transformListRequest', async () => {
+  const { waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      defaultSearchParams: { userId: '1' },
+      defaultSort: [{ property: 'userId', direction: 'desc' }],
+      transformListRequest: (searchParams, pageInfo: any) =>
+        qs.stringify(
+          {
+            ...searchParams,
+            pageSize: pageInfo.pageSize,
+            pageNo: pageInfo.pageNo,
+            sort: pageInfo.sorts.map(
+              (sortInfo: any) =>
+                `${sortInfo.property}${
+                  sortInfo.direction === 'desc' ? '_desc' : ''
+                }`,
+            ),
+          },
+          {
+            arrayFormat: 'comma',
+          },
+        ),
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(http.get).toBeCalledTimes(1);
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?userId=1&pageSize=15&pageNo=0&sort=userId_desc',
+  );
+});
+
+it('transferListResponse', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    data: {
+      content: [
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '1', userName: '张三', age: 27 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    },
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      transformListReponse: (data: HttpResponse) => ({
+        content: data.data.content,
+        totalElements: data.data.totalElements,
+        size: data.data.size,
+        number: data.data.number,
+      }),
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.items).toEqual([
+    { userId: '2', userName: '李四', age: 20 },
+    { userId: '1', userName: '张三', age: 27 },
+  ]);
+});
+
+it('transformFetchOneResponse', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '1', userName: '张三', age: 27 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    })
+    .mockResolvedValueOnce({
+      userId: '2',
+      firstName: '李',
+      lastName: '四',
+      age: 20,
+      birthday: '1999',
+    });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      transformFetchOneResponse: (response: any) => ({
+        userId: '2',
+        userName: response.firstName + response.lastName,
+      }),
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  await result.current.get('1');
+
+  expect(result.current.items[0]).toEqual({ userId: '2', userName: '李四' });
+});
+
+it('transformSaveRequest', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+  (http.post as jest.Mock).mockResolvedValue({
+    userId: '3',
+    firstName: '王',
+    lastName: '五',
+    age: 20,
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      transformSaveRequest: (itemInfo: any) => ({
+        ...itemInfo,
+        age: 20,
+      }),
+      transformSaveResponse: (response: any) => {
+        return {
+          userId: '3',
+          userName: response.firstName + response.lastName,
+          birthday: (2019 - response.age).toString(),
+        };
+      },
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  await result.current.save({ userId: '5', userName: '王五' });
+
+  expect((http.post as jest.Mock).mock.calls[0][1]).toEqual({
+    userId: '5',
+    userName: '王五',
+    age: 20,
+  });
+
+  expect(result.current.items[2]).toEqual({
+    userId: '3',
+    userName: '王五',
+    birthday: '1999',
+  });
+});
+
+it('transformUpdateRequest', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+  (http.put as jest.Mock).mockResolvedValue({
+    userId: '2',
+    userName: '李四',
+    age: 26,
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      transformUpdateRequest: (itemInfo: any) => ({
+        ...itemInfo,
+        age: 26,
+      }),
+      transformUpdateResponse: (response: any) => {
+        return {
+          userId: response.userId,
+          userName: response.userName,
+        };
+      },
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  await result.current.update({ userId: '2', userName: '李四' });
+
+  expect((http.put as jest.Mock).mock.calls[0][1]).toEqual({
+    userId: '2',
+    userName: '李四',
+    age: 26,
+  });
+
+  expect(result.current.items[0]).toEqual({
+    userId: '2',
+    userName: '李四',
+  });
 });

@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useRef } from 'react';
-import http from '@sinoui/http';
+import http, { HttpResponse } from '@sinoui/http';
 import { PageResponse, Options, SortInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
@@ -8,11 +8,21 @@ import useEffect2 from './useEffect2';
 function useRestPageApi<T, RawResponse = PageResponse<T>>(
   url: string,
   defaultValue: T[] = [],
-  options?: Options,
+  options?: Options<T>,
 ) {
   const rawResponseRef = useRef<RawResponse>();
   const keyName = options && options.keyName ? options.keyName : 'id';
-  const { defaultSearchParams, baseUrl } = (options || {}) as Options;
+  const {
+    defaultSearchParams,
+    baseUrl,
+    transformListRequest,
+    transformListReponse,
+    transformFetchOneResponse,
+    transformSaveRequest,
+    transformSaveResponse,
+    transformUpdateRequest,
+    transformUpdateResponse,
+  } = (options || {}) as Options<T>;
   const requestUrl = baseUrl || url;
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
@@ -36,12 +46,17 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     ): Promise<PageResponse<T>> => {
       dispatch({ type: 'FETCH_INIT', payload: searchParams });
 
-      const params = getSearchParams(pageNo, pageSize, sorts, searchParams);
-
       try {
-        const result = await http.get<PageResponse<T>>(
+        const params = transformListRequest
+          ? transformListRequest(searchParams, { pageNo, pageSize, sorts })
+          : getSearchParams(pageNo, pageSize, sorts, searchParams);
+        const response = await http.get<PageResponse<T>>(
           url.includes('?') ? `${url}&${params}` : `${url}?${params}`,
         );
+
+        const result = transformListReponse
+          ? transformListReponse(response as any)
+          : response;
 
         dispatch({
           type: 'FETCH_SUCCESS',
@@ -55,7 +70,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         throw e;
       }
     },
-    [url],
+    [transformListReponse, transformListRequest, url],
   );
 
   useEffect2(() => {
@@ -223,7 +238,10 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.get(`${requestUrl}/${id}`);
+      const response: T = await http.get(`${requestUrl}/${id}`);
+      const result = transformFetchOneResponse
+        ? transformFetchOneResponse(response as any)
+        : response;
 
       if (isNeedUpdate) {
         updateItem(result);
@@ -243,7 +261,13 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.post(requestUrl, itemInfo);
+      const info = transformSaveRequest
+        ? transformSaveRequest(itemInfo)
+        : itemInfo;
+      const response: T = await http.post(requestUrl, info);
+      const result = transformSaveResponse
+        ? transformSaveResponse(response as any)
+        : response;
 
       if (isNeedUpdate) {
         addItem(result);
@@ -263,7 +287,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function update(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.put(requestUrl, itemInfo);
+      const info = transformUpdateRequest
+        ? transformUpdateRequest(itemInfo)
+        : itemInfo;
+      const response: T = await http.put(requestUrl, info);
+
+      const result = transformUpdateResponse
+        ? transformUpdateResponse(response as any)
+        : response;
 
       if (isNeedUpdate) {
         updateItem(result);
