@@ -368,7 +368,7 @@ const dataSource = useRestPageApi<T, PageData>(
 - `syncToUrl` - 如果为`true`，则会同步查询条件与浏览器 URL。默认为`false`。
 - `keyName` - 指定唯一键属性名，默认为`id`。
 - `useMultiDeleteApi` - 是否启动删除多条数据的 API。默认为`true`，表示启用。见[删除数据](#删除数据)章节。
-- `transformListReponse` - 指定分页列表查询结果的转换器。
+- `transformListResponse` - 指定分页列表查询结果的转换器。
 - `transformListRequest` - 指定分页查询条件转换器。
 - `transformFetchOneRequest` - 指定获取单条数据的请求数据转换器。
 - `transformFetchOneResponse` - 指定获取单条数据的响应数据转换器。
@@ -554,13 +554,16 @@ function transformSaveRequest(user: User): SaveUserInfo {
 使用`transformSaveResponse`定义新增响应的数据格式转变。例如：
 
 ```ts
-interface Response {
+/**
+ * 新增API响应返回数据的结构
+ */
+interface ResponseData {
   result: User;
   status: boolean;
   errorMessage?: string;
 }
 
-function transformSaveResponse(response: Response): User {
+function transformSaveResponse(responseData: ResponseData): User {
   if (response.status) {
     return response.result;
   }
@@ -733,4 +736,3 @@ await dataSource.remove(['1', '2', '3']);
 ```ts
 const user = await dataSource.get('1', false);
 ```
-
