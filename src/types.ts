@@ -87,7 +87,7 @@ export interface Options {
   /**
    * 指定排序字段
    */
-  sorts?: SortInfo[];
+  defaultSort?: SortInfo[];
   /**
    * 指定默认查询条件
    */
