@@ -66,7 +66,7 @@ it('添加排序字段', async () => {
 
   const { result, waitForNextUpdate } = renderHook(() =>
     useRestPageApi('/test?sex=man', undefined, {
-      sorts: [
+      defaultSort: [
         { property: 'age', direction: 'desc' },
         { property: 'userId', direction: 'asc' },
       ],
@@ -668,7 +668,9 @@ it('更新数据详情', async () => {
     adress: '上海',
   });
 
-  result.current.update({ userId: '1', adress: '北京' });
+  await expect(
+    result.current.update({ userId: '1', adress: '北京' }),
+  ).rejects.toThrow('async error');
 });
 
 it('删除数据，与crud交互', async () => {
