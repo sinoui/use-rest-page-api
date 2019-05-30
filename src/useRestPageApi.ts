@@ -213,6 +213,23 @@ function useRestPageApi<T>(
     dispatch({ type: 'REMOVE_ITEM', payload: idxs });
   }
 
+  /**
+   * 获取一条数据详情信息
+   *
+   * @param {string} id
+   * @param {boolean} [update=true]
+   * @returns {Promise<{}>}
+   */
+  async function get(id: string, update: boolean = true): Promise<{}> {
+    const result = await http.get(`${url}/${id}`);
+
+    if (update) {
+      dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
+    }
+
+    return result;
+  }
+
   return {
     ...state,
     rawResponse,
@@ -228,6 +245,7 @@ function useRestPageApi<T>(
     removeItemById,
     removeItemAt,
     removeItemsByIds,
+    get,
   };
 }
 
