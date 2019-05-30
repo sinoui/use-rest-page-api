@@ -218,16 +218,40 @@ function useRestPageApi<T>(
    *
    * @param {string} id
    * @param {boolean} [update=true]
-   * @returns {Promise<{}>}
+   * @returns {Promise<T>}
    */
-  async function get(id: string, update: boolean = true): Promise<{}> {
-    const result = await http.get(`${url}/${id}`);
+  async function get(id: string, update: boolean = true): Promise<T> {
+    try {
+      const result: T = await http.get(`${url}/${id}`);
 
-    if (update) {
-      dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
+      if (update) {
+        dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
     }
+  }
+  /**
+   * 新增数据
+   *
+   * @param {T} itemInfo
+   * @param {boolean} [update=true]
+   * @returns {Promise<T>}
+   */
+  async function save(itemInfo: T, update: boolean = true): Promise<T> {
+    try {
+      const result: T = await http.post(url, itemInfo);
 
-    return result;
+      if (update) {
+        dispatch({ type: 'ADD_ITEM', payload: result });
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   return {
@@ -246,6 +270,7 @@ function useRestPageApi<T>(
     removeItemAt,
     removeItemsByIds,
     get,
+    save,
   };
 }
 
