@@ -217,14 +217,14 @@ function useRestPageApi<T>(
    * 获取一条数据详情信息
    *
    * @param {string} id
-   * @param {boolean} [update=true]
+   * @param {boolean} [isNeeUpdate=true]
    * @returns {Promise<T>}
    */
-  async function get(id: string, update: boolean = true): Promise<T> {
+  async function get(id: string, isNeeUpdate: boolean = true): Promise<T> {
     try {
       const result: T = await http.get(`${url}/${id}`);
 
-      if (update) {
+      if (isNeeUpdate) {
         dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
       }
 
@@ -237,15 +237,35 @@ function useRestPageApi<T>(
    * 新增数据
    *
    * @param {T} itemInfo
-   * @param {boolean} [update=true]
+   * @param {boolean} [isNeeUpdate=true]
    * @returns {Promise<T>}
    */
-  async function save(itemInfo: T, update: boolean = true): Promise<T> {
+  async function save(itemInfo: T, isNeeUpdate: boolean = true): Promise<T> {
     try {
       const result: T = await http.post(url, itemInfo);
 
-      if (update) {
+      if (isNeeUpdate) {
         dispatch({ type: 'ADD_ITEM', payload: result });
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  /**
+   * 更新数据信息
+   *
+   * @param {T} itemInfo
+   * @param {boolean} [isNeeUpdate=true]
+   * @returns {Promise<T>}
+   */
+  async function update(itemInfo: T, isNeeUpdate: boolean = true): Promise<T> {
+    try {
+      const result: T = await http.put(url, itemInfo);
+
+      if (isNeeUpdate) {
+        dispatch({ type: 'UPDATE_ITEM', payload: { item: result, keyName } });
       }
 
       return result;
@@ -271,6 +291,7 @@ function useRestPageApi<T>(
     removeItemsByIds,
     get,
     save,
+    update,
   };
 }
 

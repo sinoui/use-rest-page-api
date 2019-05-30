@@ -572,3 +572,98 @@ it('新增数据', async () => {
 
   result.current.save({});
 });
+
+it('更新数据详情', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+
+  (http.put as jest.Mock)
+    .mockResolvedValueOnce({
+      userId: '1',
+      userName: '张三',
+      age: '27',
+      sex: '男',
+      fav: '足球、篮球、乒乓球',
+    })
+    .mockResolvedValueOnce({
+      userId: '1',
+      userName: '张三',
+      age: '27',
+      sex: '男',
+      fav: '足球、篮球、乒乓球',
+      adress: '上海',
+    })
+    .mockRejectedValueOnce(new Error('async error'));
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, { keyName: 'userId' }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.items[1]).toEqual({
+    userId: '1',
+    userName: '张三',
+    age: 27,
+  });
+
+  const data = await result.current.update(
+    {
+      userId: '1',
+      userName: '张三',
+      age: '27',
+      sex: '男',
+      fav: '足球、篮球、乒乓球',
+    },
+    false,
+  );
+
+  expect(data).toEqual({
+    userId: '1',
+    userName: '张三',
+    age: '27',
+    sex: '男',
+    fav: '足球、篮球、乒乓球',
+  });
+  expect(result.current.items[1]).toEqual({
+    userId: '1',
+    userName: '张三',
+    age: 27,
+  });
+
+  const userInfo = await result.current.update({
+    userId: '1',
+    userName: '张三',
+    age: '27',
+    sex: '男',
+    fav: '足球、篮球、乒乓球',
+    adress: '上海',
+  });
+
+  expect(userInfo).toEqual({
+    userId: '1',
+    userName: '张三',
+    age: '27',
+    sex: '男',
+    fav: '足球、篮球、乒乓球',
+    adress: '上海',
+  });
+
+  expect(result.current.items[1]).toEqual({
+    userId: '1',
+    userName: '张三',
+    age: '27',
+    sex: '男',
+    fav: '足球、篮球、乒乓球',
+    adress: '上海',
+  });
+
+  result.current.update({ userId: '1', adress: '北京' });
+});
