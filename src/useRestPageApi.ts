@@ -12,7 +12,8 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 ) {
   const rawResponseRef = useRef<RawResponse>();
   const keyName = options && options.keyName ? options.keyName : 'id';
-  const defaultSearchParams = options ? options.defaultSearchParams : undefined;
+  const { defaultSearchParams, baseUrl } = (options || {}) as Options;
+  const requestUrl = baseUrl || url;
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
     pageNo: (options && options.pageNo) || 0,
@@ -222,7 +223,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.get(`${url}/${id}`);
+      const result: T = await http.get(`${requestUrl}/${id}`);
 
       if (isNeedUpdate) {
         updateItem(result);
@@ -242,7 +243,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.post(url, itemInfo);
+      const result: T = await http.post(requestUrl, itemInfo);
 
       if (isNeedUpdate) {
         addItem(result);
@@ -262,7 +263,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function update(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const result: T = await http.put(url, itemInfo);
+      const result: T = await http.put(requestUrl, itemInfo);
 
       if (isNeedUpdate) {
         updateItem(result);
@@ -290,14 +291,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       let result: T = null as any;
       if (typeof ids !== 'string') {
         if (useMultiDeleteApi) {
-          result = await http.delete(`${url}/${ids.join(',')}`);
+          result = await http.delete(`${requestUrl}/${ids.join(',')}`);
 
           if (isNeedUpdate) {
             removeItemsByIds(ids);
           }
         }
       } else {
-        result = await http.delete(`${url}/${ids}`);
+        result = await http.delete(`${requestUrl}/${ids}`);
 
         if (isNeedUpdate) {
           removeItemById(ids as string);
