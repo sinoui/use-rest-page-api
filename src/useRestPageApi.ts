@@ -12,6 +12,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 ) {
   const rawResponseRef = useRef<RawResponse>();
   const keyName = options && options.keyName ? options.keyName : 'id';
+  const defaultSearchParams = options ? options.defaultSearchParams : undefined;
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
     pageNo: (options && options.pageNo) || 0,
@@ -30,10 +31,11 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       pageNo: number,
       pageSize: number,
       sorts?: SortInfo[],
+      searchParams?: { [x: string]: string },
     ): Promise<PageResponse<T>> => {
-      dispatch({ type: 'FETCH_INIT' });
+      dispatch({ type: 'FETCH_INIT', payload: searchParams });
 
-      const params = getSearchParams(pageNo, pageSize, sorts);
+      const params = getSearchParams(pageNo, pageSize, sorts, searchParams);
 
       try {
         const result = await http.get<PageResponse<T>>(
@@ -60,6 +62,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       defaultPagination.pageNo,
       defaultPagination.pageSize,
       defaultPagination.sorts,
+      defaultSearchParams,
     );
   }, [url]);
 
@@ -73,11 +76,13 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     pageNo?: number,
     pageSize?: number,
     sorts?: SortInfo[],
+    searchParams?: { [x: string]: string },
   ): Promise<PageResponse<T>> {
     return doFetch(
       pageNo || state.pagenation.pageSize,
       pageSize || state.pagenation.pageSize,
       sorts || state.pagenation.sorts,
+      searchParams,
     );
   }
 
@@ -268,7 +273,13 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       throw error;
     }
   }
-
+  /**
+   * 删除数据
+   *
+   * @param {(string | string[])} ids
+   * @param {boolean} [isNeedUpdate=true]
+   * @returns {Promise<T>}
+   */
   async function remove(
     ids: string | string[],
     isNeedUpdate: boolean = true,
@@ -318,6 +329,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     save,
     update,
     remove,
+    defaultSearchParams,
   };
 }
 

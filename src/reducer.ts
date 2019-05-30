@@ -12,6 +12,7 @@ export interface State<T> {
   isLoading: boolean;
   items: T[];
   pagenation: PageInfo;
+  searchParams?: { [x: string]: string };
 }
 /**
  * 更新数据时更新state
@@ -77,6 +78,7 @@ function reducer<T>(state: State<T>, action: Action) {
         ...state,
         isError: false,
         isLoading: true,
+        searchParams: action.payload,
       };
     case 'FETCH_SUCCESS':
       return {

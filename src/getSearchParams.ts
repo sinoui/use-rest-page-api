@@ -5,9 +5,11 @@ export default function getSearchParams(
   pageNo: number,
   size: number,
   sorts?: SortInfo[],
+  searchParams?: { [x: string]: string },
 ) {
   return qs.stringify(
     {
+      ...searchParams,
       page: pageNo,
       size,
       sort: sorts
