@@ -13,12 +13,12 @@ export default function getSearchParams(
       sort: sorts
         ? sorts.map(
             (_sort) =>
-              `${_sort.property}${_sort.direction === 'desc' ? '_desc' : ''}`,
+              `${_sort.property}${_sort.direction === 'desc' ? ',desc' : ''}`,
           )
         : undefined,
     },
     {
-      arrayFormat: 'comma',
+      arrayFormat: 'repeat',
     },
   );
 }

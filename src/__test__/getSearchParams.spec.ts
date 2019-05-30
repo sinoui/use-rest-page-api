@@ -6,5 +6,5 @@ it('get params', () => {
     { property: 'birthday', direction: 'asc' },
   ]);
 
-  expect(params).toBe('page=3&size=15&sort=age_desc%2Cbirthday');
+  expect(params).toBe('page=3&size=15&sort=age%2Cdesc&sort=birthday');
 });

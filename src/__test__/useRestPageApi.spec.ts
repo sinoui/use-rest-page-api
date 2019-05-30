@@ -64,7 +64,7 @@ it('添加排序字段', async () => {
     totalElements: 2,
   });
 
-  const { result, waitForNextUpdate } = renderHook(() =>
+  renderHook(() =>
     useRestPageApi('/test?sex=man', undefined, {
       defaultSort: [
         { property: 'age', direction: 'desc' },
@@ -73,11 +73,9 @@ it('添加排序字段', async () => {
     }),
   );
 
-  expect(result.current.items.length).toBe(0);
-
-  await waitForNextUpdate();
-
-  expect(result.current.items.length).toBe(2);
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?sex=man&page=0&size=15&sort=age%2Cdesc&sort=userId',
+  );
 });
 
 it('自定义每页条数', async () => {
@@ -511,7 +509,7 @@ it('获取数据详情', async () => {
     adress: '上海',
   });
 
-  result.current.get('1');
+  await expect(result.current.get('1')).rejects.toThrow('async error');
 });
 
 it('新增数据', async () => {
@@ -573,7 +571,7 @@ it('新增数据', async () => {
   });
   expect(result.current.items.length).toBe(3);
 
-  result.current.save({});
+  await expect(result.current.save({})).rejects.toThrow('async error');
 });
 
 it('更新数据详情', async () => {
@@ -723,7 +721,7 @@ it('删除数据，与crud交互', async () => {
 
   expect(result.current.items.length).toBe(7);
 
-  result.current.remove('7');
+  await expect(result.current.remove('1')).rejects.toThrow('失败');
 });
 
 it('配置不允许删除多项', async () => {
