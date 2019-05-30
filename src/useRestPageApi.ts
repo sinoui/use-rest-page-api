@@ -82,7 +82,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       pageNo || state.pagenation.pageSize,
       pageSize || state.pagenation.pageSize,
       sorts || state.pagenation.sorts,
-      searchParams,
+      { ...state.searchParams, ...searchParams },
     );
   }
 
@@ -310,6 +310,41 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     }
   }
 
+  /**
+   * 查询数据
+   *
+   * @param {{ [x: string]: string }} searchParams
+   * @returns
+   */
+  function query(searchParams: { [x: string]: string }) {
+    const { pageNo, pageSize, sorts } = state.pagenation;
+
+    return doFetch(pageNo, pageSize, sorts, {
+      ...state.searchParams,
+      ...searchParams,
+    });
+  }
+
+  /**
+   * 重新加载数据
+   *
+   * @returns
+   */
+  function reload() {
+    const { pageNo, pageSize, sorts } = state.pagenation;
+    return doFetch(pageNo, pageSize, sorts, state.searchParams);
+  }
+
+  /**
+   * 重置查询条件并完成一次查询
+   *
+   * @returns
+   */
+  function reset() {
+    const { pageNo, pageSize, sorts } = state.pagenation;
+    return doFetch(pageNo, pageSize, sorts, defaultSearchParams);
+  }
+
   return {
     ...state,
     rawResponse: rawResponseRef.current,
@@ -330,6 +365,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     update,
     remove,
     defaultSearchParams,
+    query,
+    reload,
+    reset,
   };
 }
 

@@ -343,7 +343,7 @@ describe('不与后端交互的操作', () => {
 
     result.current.setItem('1', { birthday: '1993-10-16' });
 
-    expect(result.current.items[0].birthday).toBe('1993-10-16');
+    expect((result.current.items[0] as any).birthday).toBe('1993-10-16');
   });
 
   it('一组数据字段更新', async () => {
@@ -750,4 +750,68 @@ it('配置不允许删除多项', async () => {
 
   expect(result.current.items.length).toBe(2);
   expect(http.delete).toHaveBeenCalledTimes(0);
+});
+
+it('query方法数据查询', async () => {
+  const { result } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      defaultSearchParams: { userId: '1' },
+    }),
+  );
+
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?userId=1&page=0&size=15',
+  );
+
+  result.current.query({ userName: '张三' });
+
+  expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
+    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+  );
+});
+
+it('重新加载数据', () => {
+  const { result } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      defaultSearchParams: { userId: '1' },
+    }),
+  );
+
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?userId=1&page=0&size=15',
+  );
+
+  result.current.query({ userName: '张三' });
+
+  expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
+    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+  );
+
+  result.current.reload();
+  expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
+    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+  );
+});
+
+it('重置查询条件并完成查询', () => {
+  const { result } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      defaultSearchParams: { userId: '1' },
+    }),
+  );
+
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?userId=1&page=0&size=15',
+  );
+
+  result.current.query({ userName: '张三' });
+
+  expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
+    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+  );
+
+  result.current.reset();
+  expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
+    '/test?userId=1&page=0&size=15',
+  );
 });
