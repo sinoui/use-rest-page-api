@@ -370,7 +370,6 @@ const dataSource = useRestPageApi<T, PageData>(
 - `useMultiDeleteApi` - 是否启动删除多条数据的 API。默认为`true`，表示启用。见[删除数据](#删除数据)章节。
 - `transformListResponse` - 指定分页列表查询结果的转换器。
 - `transformListRequest` - 指定分页查询条件转换器。
-- `transformFetchOneRequest` - 指定获取单条数据的请求数据转换器。
 - `transformFetchOneResponse` - 指定获取单条数据的响应数据转换器。
 - `transformSaveRequest` - 指定新增数据的请求数据转换器。
 - `transformSaveResponse` - 指定新增数据的响应数据转换器。
