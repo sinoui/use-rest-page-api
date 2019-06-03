@@ -85,9 +85,7 @@ function reducer<T>(state: State<T>, action: Action) {
         ...state,
         isLoading: false,
         isError: false,
-        items: action.payload
-          ? [...state.items, ...action.payload.content]
-          : [...state.items],
+        items: action.payload ? action.payload.content : [...state.items],
         pagenation: action.payload
           ? {
               ...state.pagenation,
