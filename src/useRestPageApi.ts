@@ -37,7 +37,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     transformUpdateRequest,
     transformUpdateResponse,
   } = (options || {}) as Options<T>;
+
   const requestUrl = baseUrl || url;
+
   const defaultPagination = {
     pageSize: (options && options.pageSize) || 15,
     pageNo: (options && options.pageNo) || 0,
@@ -49,7 +51,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     isLoading: false,
     items: defaultValue,
     pagenation: defaultPagination,
-    searchParams: defaultSearchParams,
+    searchParams: syncToUrl
+      ? getSearchParamsFromLocation() || defaultSearchParams
+      : defaultSearchParams,
   });
 
   const doFetch = useCallback(
@@ -377,9 +381,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function query(searchParams: { [x: string]: string }) {
-    const { pageNo, pageSize, sorts } = state.pagenation;
+    const { pageSize, sorts } = state.pagenation;
 
-    return doFetch(pageNo, pageSize, sorts, searchParams);
+    return doFetch(0, pageSize, sorts, searchParams);
   }
 
   /**
