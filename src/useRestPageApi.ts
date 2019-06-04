@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useRef } from 'react';
-import http, { HttpResponse } from '@sinoui/http';
+import http from '@sinoui/http';
 import { PageResponse, Options, SortInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
@@ -35,6 +35,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     isLoading: false,
     items: defaultValue,
     pagenation: defaultPagination,
+    searchParams: defaultSearchParams,
   });
 
   const doFetch = useCallback(
@@ -98,7 +99,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       pageNo || state.pagenation.pageSize,
       pageSize || state.pagenation.pageSize,
       sorts || state.pagenation.sorts,
-      { ...state.searchParams, ...searchParams },
+      searchParams || state.searchParams,
     );
   }
 
@@ -351,10 +352,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   function query(searchParams: { [x: string]: string }) {
     const { pageNo, pageSize, sorts } = state.pagenation;
 
-    return doFetch(pageNo, pageSize, sorts, {
-      ...state.searchParams,
-      ...searchParams,
-    });
+    return doFetch(pageNo, pageSize, sorts, searchParams);
   }
 
   /**

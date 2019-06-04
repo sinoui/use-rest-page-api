@@ -767,7 +767,7 @@ it('query方法数据查询', async () => {
   result.current.query({ userName: '张三' });
 
   expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
-    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+    '/test?userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
   );
 });
 
@@ -785,12 +785,12 @@ it('重新加载数据', () => {
   result.current.query({ userName: '张三' });
 
   expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
-    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+    '/test?userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
   );
 
   result.current.reload();
   expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
-    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+    '/test?userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
   );
 });
 
@@ -808,7 +808,7 @@ it('重置查询条件并完成查询', () => {
   result.current.query({ userName: '张三' });
 
   expect((http.get as jest.Mock).mock.calls[1][0]).toMatch(
-    '/test?userId=1&userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
+    '/test?userName=%E5%BC%A0%E4%B8%89&page=0&size=15',
   );
 
   result.current.reset();
