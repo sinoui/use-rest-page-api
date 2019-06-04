@@ -1,9 +1,22 @@
-import { useReducer, useCallback, useRef } from 'react';
-import http, { HttpResponse } from '@sinoui/http';
+import { useReducer, useCallback, useRef, useEffect } from 'react';
+import http from '@sinoui/http';
+import qs from 'qs';
 import { PageResponse, Options, SortInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
 import useEffect2 from './useEffect2';
+
+/**
+ * 从history中获取查询参数
+ */
+function getSearchParamsFromLocation() {
+  const { search } = window.location;
+
+  if (search && search.length > 1) {
+    return qs.parse(window.location.search.substr(1));
+  }
+  return null;
+}
 
 function useRestPageApi<T, RawResponse = PageResponse<T>>(
   url: string,
@@ -13,6 +26,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   const rawResponseRef = useRef<RawResponse>();
   const keyName = options && options.keyName ? options.keyName : 'id';
   const {
+    syncToUrl,
     defaultSearchParams,
     baseUrl,
     transformListRequest,
@@ -74,13 +88,23 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   );
 
   useEffect2(() => {
+    const searchParams = syncToUrl
+      ? getSearchParamsFromLocation() || defaultSearchParams
+      : defaultSearchParams;
     doFetch(
       defaultPagination.pageNo,
       defaultPagination.pageSize,
       defaultPagination.sorts,
-      defaultSearchParams,
+      searchParams,
     );
   }, [url]);
+
+  useEffect(() => {
+    const search = `?${qs.stringify(state.searchParams)}`;
+    if (search !== window.location.search) {
+      window.history.pushState(window.history.state, document.title, search);
+    }
+  }, [state.searchParams]);
 
   /**
    * 获取数据
