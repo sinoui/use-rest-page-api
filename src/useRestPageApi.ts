@@ -100,11 +100,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   }, [url]);
 
   useEffect(() => {
+    if (!syncToUrl) {
+      return;
+    }
     const search = `?${qs.stringify(state.searchParams)}`;
     if (search !== window.location.search) {
       window.history.pushState(window.history.state, document.title, search);
     }
-  }, [state.searchParams]);
+  }, [state.searchParams, syncToUrl]);
 
   /**
    * 获取数据
