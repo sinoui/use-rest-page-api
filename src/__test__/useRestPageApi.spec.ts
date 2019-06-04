@@ -1,4 +1,4 @@
-import { renderHook } from 'react-hooks-testing-library';
+import { renderHook, act } from 'react-hooks-testing-library';
 import http, { HttpResponse } from '@sinoui/http';
 import qs from 'qs';
 import useRestPageApi from '../useRestPageApi';
@@ -1016,4 +1016,35 @@ it('transformUpdateRequest', async () => {
     userId: '2',
     userName: '李四',
   });
+});
+
+it('查询参数与history结合使用', () => {
+  window.history.pushState('', '', '?a=1');
+
+  const { result } = renderHook(() =>
+    useRestPageApi('/users', [], {
+      syncToUrl: true,
+    }),
+  );
+
+  expect(result.current.searchParams).toEqual({
+    a: '1',
+  });
+});
+
+it('查询参数发生变化，同步到history', () => {
+  window.history.pushState('', '', '?');
+  const { result } = renderHook(() =>
+    useRestPageApi('/users', [], {
+      syncToUrl: true,
+    }),
+  );
+
+  act(() => {
+    result.current.query({
+      b: '2',
+    });
+  });
+
+  expect(window.location.search).toBe('?b=2');
 });
