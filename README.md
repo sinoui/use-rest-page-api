@@ -353,9 +353,7 @@ const dataSource = useRestPageApi<T, PageData>(
 指定默认的列表分页数据，默认为：
 
 ```js
-{
-  content: [];
-}
+[];
 ```
 
 ### options
