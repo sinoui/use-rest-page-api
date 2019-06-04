@@ -756,12 +756,13 @@ it('配置不允许删除多项', async () => {
 it('query方法数据查询', async () => {
   const { result } = renderHook(() =>
     useRestPageApi('/test', undefined, {
+      pageNo: 1,
       defaultSearchParams: { userId: '1' },
     }),
   );
 
   expect((http.get as jest.Mock).mock.calls[0][0]).toMatch(
-    '/test?userId=1&page=0&size=15',
+    '/test?userId=1&page=1&size=15',
   );
 
   result.current.query({ userName: '张三' });
