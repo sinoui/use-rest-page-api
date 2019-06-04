@@ -99,7 +99,7 @@ GET /users?sex=male&size=10&page=0&sort=firstName&sort=lastName,desc
 请求参数说明：
 
 - `sex=male` - 表示列表的过滤条件。@sinoui/use-rest-page-api 默认将过滤条件放在查询字符串中。
-- `size`- 每一页的大小，默认为`10`，可以通过`options.pageSize`更改
+- `size`- 每一页的大小，默认为`15`，可以通过`options.pageSize`更改
 - `page` - 第几页，从第 0 页开始计算
 - `sort` - 排序，默认格式为`propertyName[,asc|desc]`，如果有多个，则按照`sort=propertyName&sort=propertyName2,desc`这样的方式编排
 
@@ -127,7 +127,7 @@ GET /users?sex=male&size=10&page=0&sort=firstName&sort=lastName,desc
     // 此处省去8条数据
   ],
   "totalElements": 540, // 符合条件的所有用户数量
-  "size": 10, // 页大小，可以没有，默认与请求中的size一致
+  "size": 15, // 页大小，可以没有，默认与请求中的size一致
   "number": 0, // 当前第几页的意思，可以没有，默认与请求的page一致
   "totalPages": 54 // 一共多少页，可以没有，默认为`Math.ceil(totalElements / size)`
 }
@@ -675,15 +675,6 @@ dataSource.query(searchParams);
 dataSource.searchParams;
 // 获取默认的查询条件
 dataSource.defaultSearchParams;
-// 重置查询条件为默认查询条件，并发送列表查询请求
-dataSource.reset();
-// 更新默认的查询条件，并发送列表查询请求。
-// 注意，这个方法会将新旧两个默认查询条件做对象合并后的新对象作为新的默认查询条件。
-dataSource.setDefaultSearchParams({
-  sex: 'female',
-});
-// 更新默认查询条件，但是不发送列表查询请求。
-dataSource.setDefaultSearchParams({ sex: 'female' }, false);
 
 // 获取第5页数据
 dataSource.fetch(4);
@@ -720,13 +711,9 @@ const user = await dataSource.update({
 });
 
 // 删除数据
-await dataSource.delete('1');
-// or
 await dataSource.remove('1');
 
 // 删除多条数据
-await dataSource.delete(['1', '2', '3']);
-// or
 await dataSource.remove(['1', '2', '3']);
 ```
 
