@@ -1,5 +1,6 @@
 {
-  "name": "use-rest-page-api",
+  "name": "@sinoui/use-rest-page-api",
+  "version": "0.1.0",
   "description": "简化分页列表与RESTful CRUD API交互的状态管理",
   "license": "MIT",
   "main": "dist/index.js",
@@ -47,13 +48,12 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@babel/runtime": "^7.4.4",
-    "@sinoui/http": "^0.2.2",
+    "@sinoui/http": "^0.2.2"
+  },
+  "devDependencies": {
     "@types/qs": "^6.5.3",
     "@types/react": "^16.8.18",
     "qs": "^6.7.0",
-    "react": "^16.8.6"
-  },
-  "devDependencies": {
     "husky": "^2.3.0",
     "lint-staged": "^8.1.7",
     "prettier": "^1.17.1",
@@ -61,5 +61,11 @@
     "react-test-renderer": "^16.8.6",
     "ts-lib-tools": "^0.1.7",
     "typescript": "^3.4.5"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
