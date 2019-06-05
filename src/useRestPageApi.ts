@@ -50,7 +50,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     isError: false,
     isLoading: false,
     items: defaultValue,
-    pagenation: defaultPagination,
+    pagination: defaultPagination,
     searchParams: syncToUrl
       ? getSearchParamsFromLocation() || defaultSearchParams
       : defaultSearchParams,
@@ -127,9 +127,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     searchParams?: { [x: string]: string },
   ): Promise<PageResponse<T>> {
     return doFetch(
-      pageNo || state.pagenation.pageSize,
-      pageSize || state.pagenation.pageSize,
-      sorts || state.pagenation.sorts,
+      pageNo || pageNo === 0 ? pageNo : state.pagination.pageNo,
+      pageSize || state.pagination.pageSize,
+      sorts || state.pagination.sorts,
       searchParams || state.searchParams,
     );
   }
@@ -140,7 +140,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function nextPage(): Promise<PageResponse<T>> {
-    const { pageNo, pageSize, totalElements, sorts } = state.pagenation;
+    const { pageNo, pageSize, totalElements, sorts } = state.pagination;
     const totalPages = Math.ceil(totalElements / pageSize);
 
     return doFetch(Math.min(totalPages - 1, pageNo + 1), pageSize, sorts);
@@ -152,7 +152,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function prevPage(): Promise<PageResponse<T>> {
-    const { pageNo, pageSize, sorts } = state.pagenation;
+    const { pageNo, pageSize, sorts } = state.pagination;
 
     return doFetch(Math.max(0, pageNo - 1), pageSize, sorts);
   }
@@ -164,7 +164,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns {Promise<PageResponse<T>>}
    */
   function sortWith(sorts: SortInfo[]): Promise<PageResponse<T>> {
-    return doFetch(state.pagenation.pageNo, state.pagenation.pageSize, sorts);
+    return doFetch(state.pagination.pageNo, state.pagination.pageSize, sorts);
   }
 
   /**
@@ -381,7 +381,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function query(searchParams: { [x: string]: string }) {
-    const { pageSize, sorts } = state.pagenation;
+    const { pageSize, sorts } = state.pagination;
 
     return doFetch(0, pageSize, sorts, searchParams);
   }
@@ -392,7 +392,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function reload() {
-    const { pageNo, pageSize, sorts } = state.pagenation;
+    const { pageNo, pageSize, sorts } = state.pagination;
     return doFetch(pageNo, pageSize, sorts, state.searchParams);
   }
 
@@ -402,7 +402,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function reset() {
-    const { pageNo, pageSize, sorts } = state.pagenation;
+    const { pageNo, pageSize, sorts } = state.pagination;
     return doFetch(pageNo, pageSize, sorts, defaultSearchParams);
   }
 

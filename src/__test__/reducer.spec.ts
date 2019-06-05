@@ -4,7 +4,7 @@ const defaultState = {
   items: [],
   isError: false,
   isLoading: false,
-  pagenation: {
+  pagination: {
     totalElements: 0,
     pageSize: 15,
     pageNo: 0,
@@ -51,7 +51,7 @@ it('删除数据', () => {
     ],
     isError: false,
     isLoading: false,
-    pagenation: {
+    pagination: {
       totalElements: 0,
       pageSize: 15,
       pageNo: 0,

@@ -11,7 +11,7 @@ export interface State<T> {
   isError: boolean;
   isLoading: boolean;
   items: T[];
-  pagenation: PageInfo;
+  pagination: PageInfo;
   searchParams?: { [x: string]: string };
 }
 /**
@@ -86,15 +86,15 @@ function reducer<T>(state: State<T>, action: Action) {
         isLoading: false,
         isError: false,
         items: action.payload ? action.payload.content : [...state.items],
-        pagenation: action.payload
+        pagination: action.payload
           ? {
-              ...state.pagenation,
+              ...state.pagination,
               pageNo: action.payload.number,
               pageSize: action.payload.size,
               totalElements: action.payload.totalElements,
               sorts: action.payload.sorts,
             }
-          : { ...state.pagenation },
+          : { ...state.pagination },
       };
     case 'FETCH_FAILURE':
       return {

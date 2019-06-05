@@ -27,7 +27,7 @@ it('只有url时获取数据成功', async () => {
   expect(result.current.items).toEqual([]);
   expect(result.current.isError).toBeFalsy();
   expect(result.current.isLoading).toBeTruthy();
-  expect(result.current.pagenation).toEqual({
+  expect(result.current.pagination).toEqual({
     pageNo: 0,
     pageSize: 15,
     totalElements: 0,
@@ -37,7 +37,7 @@ it('只有url时获取数据成功', async () => {
 
   expect(result.current.isLoading).toBeFalsy();
   expect(result.current.items[0]).toEqual({ userId: '1', userName: '张三' });
-  expect(result.current.pagenation.totalElements).toBe(1);
+  expect(result.current.pagination.totalElements).toBe(1);
 });
 
 it('只有url参数时获取数据失败', async () => {
@@ -96,7 +96,7 @@ it('自定义每页条数', async () => {
     }),
   );
 
-  expect(result.current.pagenation.pageSize).toBe(50);
+  expect(result.current.pagination.pageSize).toBe(50);
 });
 
 it('fetch方法获取数据', async () => {
@@ -126,21 +126,22 @@ it('fetch方法获取数据', async () => {
         { userId: '2', userName: '李四', age: 20 },
         { userId: '3', userName: '王五', age: 20 },
       ],
-      number: 1,
+      number: 0,
       size: 15,
       totalElements: 18,
     });
   const { result } = renderHook(() => useRestPageApi('/test'));
 
-  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(result.current.pagination.pageNo).toBe(0);
 
   await result.current.fetch(1);
 
-  expect(result.current.pagenation.pageNo).toBe(1);
+  expect(result.current.pagination.pageNo).toBe(1);
 
-  await result.current.fetch(undefined, 15);
+  await result.current.fetch(0, 15);
 
-  expect(result.current.pagenation.pageSize).toBe(15);
+  expect(result.current.pagination.pageSize).toBe(15);
+  expect(result.current.pagination.pageNo).toBe(0);
   expect(http.get).toHaveBeenCalledTimes(3);
 });
 
@@ -182,15 +183,15 @@ it('获取下一页数据', async () => {
     useRestPageApi('/test'),
   );
 
-  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(result.current.pagination.pageNo).toBe(0);
 
   await waitForNextUpdate();
 
-  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(result.current.pagination.pageNo).toBe(0);
 
   await result.current.nextPage();
 
-  expect(result.current.pagenation.pageNo).toBe(1);
+  expect(result.current.pagination.pageNo).toBe(1);
 });
 
 it('获取上一页数据', async () => {
@@ -231,16 +232,16 @@ it('获取上一页数据', async () => {
     useRestPageApi('/test'),
   );
 
-  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(result.current.pagination.pageNo).toBe(0);
 
   await waitForNextUpdate();
 
-  expect(result.current.pagenation.pageNo).toBe(1);
+  expect(result.current.pagination.pageNo).toBe(1);
   expect(http.get).toHaveBeenCalledTimes(1);
 
   await result.current.prevPage();
 
-  expect(result.current.pagenation.pageNo).toBe(0);
+  expect(result.current.pagination.pageNo).toBe(0);
   expect(http.get).toHaveBeenCalledTimes(2);
 });
 
@@ -269,7 +270,7 @@ it('列表排序', async () => {
     useRestPageApi('/test'),
   );
 
-  expect(result.current.pagenation.sorts).toBeUndefined();
+  expect(result.current.pagination.sorts).toBeUndefined();
 
   await waitForNextUpdate();
 
@@ -278,7 +279,7 @@ it('列表排序', async () => {
     { property: 'userId', direction: 'asc' },
   ]);
 
-  expect(result.current.pagenation.sorts).toEqual([
+  expect(result.current.pagination.sorts).toEqual([
     { property: 'age', direction: 'desc' },
     { property: 'userId', direction: 'asc' },
   ]);
