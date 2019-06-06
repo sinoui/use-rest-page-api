@@ -18,17 +18,28 @@ function getSearchParamsFromLocation() {
   return null;
 }
 
+/**
+ * 简化分页列表与RESTful CRUD API交互的状态管理的Hook
+ *
+ * @template T
+ * @template RawResponse
+ * @param {string} url 获取数据的url
+ * @param {T[]} [defaultValue=[]] 默认列表数据
+ * @param {Options<T>} [options] 配置项
+ * @returns
+ */
 function useRestPageApi<T, RawResponse = PageResponse<T>>(
   url: string,
   defaultValue: T[] = [],
-  options?: Options<T>,
+  options: Options<T> = {},
 ) {
   const rawResponseRef = useRef<RawResponse>();
-  const keyName = options && options.keyName ? options.keyName : 'id';
+
   const {
+    keyName = 'id',
     syncToUrl,
     defaultSearchParams,
-    baseUrl,
+    baseUrl = url,
     transformListRequest,
     transformListReponse,
     transformFetchOneResponse,
@@ -38,13 +49,11 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     transformUpdateResponse,
   } = (options || {}) as Options<T>;
 
-  const requestUrl = baseUrl || url;
-
   const defaultPagination = {
-    pageSize: (options && options.pageSize) || 15,
-    pageNo: (options && options.pageNo) || 0,
+    pageSize: options.pageSize || 15,
+    pageNo: options.pageNo || 0,
     totalElements: defaultValue.length || 0,
-    sorts: options && options.defaultSort,
+    sorts: options.defaultSort,
   };
   const [state, dispatch] = useReducer(reducer, {
     isError: false,
@@ -121,17 +130,12 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns
    */
   function fetch(
-    pageNo?: number,
-    pageSize?: number,
-    sorts?: SortInfo[],
-    searchParams?: { [x: string]: string },
+    pageNo: number = state.pagination.pageNo,
+    pageSize: number = state.pagination.pageSize,
+    sorts: SortInfo[] = state.pagination.sorts,
+    searchParams: { [x: string]: string } = state.searchParams,
   ): Promise<PageResponse<T>> {
-    return doFetch(
-      pageNo || pageNo === 0 ? pageNo : state.pagination.pageNo,
-      pageSize || state.pagination.pageSize,
-      sorts || state.pagination.sorts,
-      searchParams || state.searchParams,
-    );
+    return doFetch(pageNo, pageSize, sorts, searchParams);
   }
 
   /**
@@ -193,10 +197,10 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * 更新指定数据的部分字段
    *
    * @param {string} itemId 数据key值
-   * @param {object} itemInfo 要更新的字段信息
+   * @param {T} itemInfo 要更新的字段信息
    * @returns {T}
    */
-  function setItem(itemId: string, itemInfo: object): T {
+  function setItem(itemId: string, itemInfo: T): T {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const item = state.items.find((data: any) => data[keyName] === itemId);
     const newItem = { ...item, ...itemInfo };
@@ -211,9 +215,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   /**
    * 替换数据
    *
-   * @param {object[]} itemsInfo
+   * @param {T[]} itemsInfo
    */
-  function setItems(itemsInfo: object[]) {
+  function setItems(itemsInfo: T[]) {
     dispatch({ type: 'SET_ITEMS', payload: itemsInfo });
   }
 
@@ -278,7 +282,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const response: T = await http.get(`${requestUrl}/${id}`);
+      const response: T = await http.get(`${baseUrl}/${id}`);
       const result = transformFetchOneResponse
         ? transformFetchOneResponse(response as any)
         : response;
@@ -304,7 +308,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       const info = transformSaveRequest
         ? transformSaveRequest(itemInfo)
         : itemInfo;
-      const response: T = await http.post(requestUrl, info);
+      const response: T = await http.post(baseUrl, info);
       const result = transformSaveResponse
         ? transformSaveResponse(response as any)
         : response;
@@ -330,7 +334,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       const info = transformUpdateRequest
         ? transformUpdateRequest(itemInfo)
         : itemInfo;
-      const response: T = await http.put(requestUrl, info);
+      const response: T = await http.put(baseUrl, info);
 
       const result = transformUpdateResponse
         ? transformUpdateResponse(response as any)
@@ -352,31 +356,25 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function remove(
-    ids: string | string[],
-    isNeedUpdate: boolean = true,
-  ): Promise<T> {
+  async function remove(ids: string | string[], isNeedUpdate: boolean = true) {
     const { useMultiDeleteApi = true } = options || {};
 
     try {
-      let result: T = null as any;
       if (typeof ids !== 'string') {
         if (useMultiDeleteApi) {
-          result = await http.delete(`${requestUrl}/${ids.join(',')}`);
+          await http.delete(`${baseUrl}/${ids.join(',')}`);
 
           if (isNeedUpdate) {
             removeItemsByIds(ids);
           }
         }
       } else {
-        result = await http.delete(`${requestUrl}/${ids}`);
+        await http.delete(`${baseUrl}/${ids}`);
 
         if (isNeedUpdate) {
           removeItemById(ids as string);
         }
       }
-
-      return result;
     } catch (error) {
       throw error;
     }
