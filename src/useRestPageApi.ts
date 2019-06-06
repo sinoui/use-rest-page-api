@@ -1,7 +1,7 @@
 import { useReducer, useCallback, useRef, useEffect } from 'react';
 import http from '@sinoui/http';
 import qs from 'qs';
-import { PageResponse, Options, SortInfo } from './types';
+import { PageResponse, Options, SortInfo, RestPageResponseInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
 import useEffect2 from './useEffect2';
@@ -32,7 +32,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   url: string,
   defaultValue: T[] = [],
   options: Options<T> = {},
-) {
+): RestPageResponseInfo<T, RawResponse> {
   const rawResponseRef = useRef<RawResponse>();
 
   const {

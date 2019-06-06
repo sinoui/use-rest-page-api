@@ -60,7 +60,7 @@
     "react": "^16.8.6",
     "react-hooks-testing-library": "^0.5.0",
     "react-test-renderer": "^16.8.6",
-    "ts-lib-tools": "^0.2.0",
+    "ts-lib-tools": "^0.2.2",
     "typescript": "^3.4.5"
   },
   "peerDependencies": {

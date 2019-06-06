@@ -1,6 +1,12 @@
 import useRestPageApi from './useRestPageApi';
-import { Options, SortInfo, PageInfo, PageResponse } from './types';
+import {
+  Options,
+  SortInfo,
+  PageInfo,
+  PageResponse,
+  RestPageResponseInfo,
+} from './types';
 
 export default useRestPageApi;
 
-export { Options, SortInfo, PageInfo, PageResponse };
+export { Options, SortInfo, PageInfo, PageResponse, RestPageResponseInfo };

@@ -1676,10 +1676,10 @@ babel-preset-jest@^24.6.0:
     "@babel/plugin-syntax-object-rest-spread" "^7.0.0"
     babel-plugin-jest-hoist "^24.6.0"
 
-babel-preset-ts-lib@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/babel-preset-ts-lib/-/babel-preset-ts-lib-0.1.0.tgz#92b1ca284dcbbfaaf19e0d42aa901155afc00110"
-  integrity sha512-sm2DE6bHjgXe9fwMt/SatIlXhHfHF/UqfoExgQDCf2Sjz63XHGN4nmEqGH3NFbyJJ0fpuSGcQlBSG79YcteBRA==
+babel-preset-ts-lib@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/babel-preset-ts-lib/-/babel-preset-ts-lib-0.2.2.tgz#59e82756d6e4dbcb104295a36f55b7be67715195"
+  integrity sha512-S9zLcOAC6iS7v+6OR8zrpRc9iEKbox7jVyDCcn+zviSTpa5UpLQ+zDHOilLzcjzctVegMKAvWb0tl9xF83+bOQ==
   dependencies:
     "@babel/core" "^7.4.4"
     "@babel/plugin-proposal-class-properties" "^7.4.4"
@@ -2501,10 +2501,10 @@ eslint-config-prettier@^4.3.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-config-ts-lib@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-ts-lib/-/eslint-config-ts-lib-0.2.0.tgz#8ae142e255ef43aa652f0ea5819ac4486aac83cd"
-  integrity sha512-UItaDB4GX+wttaRpFlnCwkYTAxXXfBj4hyD1f62+TpJVxo+lAaFZJ7/M78PklAGRjASUHtDPu2Ci2nqtwRfuaQ==
+eslint-config-ts-lib@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/eslint-config-ts-lib/-/eslint-config-ts-lib-0.2.2.tgz#a9cccbf153e9751b728243f1913ffc30749ff191"
+  integrity sha512-JrF6fRdveZt1cNjK3GwGmOj20HUFt4B5AoJX8CCIK8D2V0vnLQvLxHn0pmzdO0MJ1QtQ358QBouxSC0c1PdFKA==
 
 eslint-import-resolver-node@^0.3.2:
   version "0.3.2"
@@ -6357,24 +6357,24 @@ trough@^1.0.0:
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.4.tgz#3b52b1f13924f460c3fbfd0df69b587dbcbc762e"
   integrity sha512-tdzBRDGWcI1OpPVmChbdSKhvSVurznZ8X36AYURAcl+0o2ldlCY2XPzyXNNxwJwwyIU+rIglTCG4kxtNKBQH7Q==
 
-ts-lib-scripts-utils@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/ts-lib-scripts-utils/-/ts-lib-scripts-utils-0.1.0.tgz#9f18f8bcaebc8dae707cecbd936e888db841c9a0"
-  integrity sha512-S4/hxuacZfMC8H+B0HNd5J8izh9LQSmTuLMVLvAi5eNvRUyC+maXwzqzJoeJ52EC26VsId0jJg2gYdiBHwzx7g==
+ts-lib-scripts-utils@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/ts-lib-scripts-utils/-/ts-lib-scripts-utils-0.2.2.tgz#f48ff2bfc9dcf7435639e56719034cc484cfd343"
+  integrity sha512-3wzGa0Rs8IyiJGxP15UXTEwRJydaBJxsrEkUa+VndQD3E/hve+w2euFv03ypoUU3571pJC4LT0HWaWSN5CD36A==
   dependencies:
     chalk "^2.4.2"
 
-ts-lib-tools@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ts-lib-tools/-/ts-lib-tools-0.2.1.tgz#2a19a385795dd7d3013304db5c214991d59220e1"
-  integrity sha512-wD+xhHnbtBe3AM1SCMl9dRNv9cTnfuCH0KwbDxxJFOIYdMRlZhrZ1G00e1IPfy/ha4wwNHA63EeJHCSZjDTD/A==
+ts-lib-tools@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/ts-lib-tools/-/ts-lib-tools-0.2.2.tgz#a38140693512375b2ea2da9e0412449330369215"
+  integrity sha512-nM+taK3PWrdczJIn2I9Me8+jlRt+ke7IlRiffGDIXiuT1F8d/VluVtzyI0W9ZI9t2zMFUg8DogHIu9tXrie/Tw==
   dependencies:
     "@svgr/rollup" "^4.3.0"
     "@types/jest" "^24.0.13"
     "@typescript-eslint/eslint-plugin" "^1.9.0"
     "@typescript-eslint/parser" "^1.9.0"
     babel-jest "^24.8.0"
-    babel-preset-ts-lib "^0.1.0"
+    babel-preset-ts-lib "^0.2.2"
     camelcase "^5.3.1"
     chalk "^2.4.2"
     commander "^2.20.0"
@@ -6382,7 +6382,7 @@ ts-lib-tools@^0.2.0:
     eslint "^5.16.0"
     eslint-config-airbnb "17.1.0"
     eslint-config-prettier "^4.3.0"
-    eslint-config-ts-lib "^0.2.0"
+    eslint-config-ts-lib "^0.2.2"
     eslint-plugin-import "^2.17.2"
     eslint-plugin-jsx-a11y "^6.2.1"
     eslint-plugin-react "^7.13.0"
@@ -6405,7 +6405,7 @@ ts-lib-tools@^0.2.0:
     rollup-plugin-sourcemaps "^0.4.2"
     rollup-plugin-terser "^4.0.4"
     rollup-plugin-typescript2 "^0.21.0"
-    ts-lib-scripts-utils "^0.1.0"
+    ts-lib-scripts-utils "^0.2.2"
     tslib "^1.9.3"
 
 tslib@1.9.3, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:

@@ -140,3 +140,39 @@ export interface Options<T> {
    */
   transformUpdateResponse?: (response: HttpResponse) => T;
 }
+
+export interface RestPageResponseInfo<T, RawResponse> {
+  pagination: PageInfo;
+  items: any[];
+  isLoading: boolean;
+  isError: boolean;
+  keyName: string;
+  searchParams?: { [x: string]: string };
+  defaultSearchParams?: { [x: string]: string };
+  rawResponse?: RawResponse;
+  fetch: (
+    pageNo?: number,
+    pageSize?: number,
+    sorts?: SortInfo[],
+    searchParams?: { [x: string]: string },
+  ) => Promise<PageResponse<T>>;
+  nextPage: () => Promise<PageResponse<T>>;
+  prevPage: () => Promise<PageResponse<T>>;
+  sortWith: (sorts: SortInfo[]) => Promise<PageResponse<T>>;
+  getItemById: (itemId: string) => T;
+  updateItem: (item: T) => T;
+  setItem: (itemId: string, itemInfo: T) => T;
+  setItems: (itemsInfo: T[]) => void;
+  addItem: (item: T) => void;
+  removeItemById: (itemId: string) => void;
+  removeItemAt: (index: number) => void;
+  removeItemsByIds: (ids: string[]) => void;
+  clean: () => void;
+  get: (id: string, isNeedUpdate?: boolean) => Promise<T>;
+  save: (itemInfo: T, isNeedUpdate?: boolean) => Promise<T>;
+  update: (itemInfo: T, isNeedUpdate?: boolean) => Promise<T>;
+  remove: (ids: string | string[], isNeedUpdate?: boolean) => void;
+  query: (searchParams: { [x: string]: string }) => void;
+  reload: () => void;
+  reset: () => void;
+}
