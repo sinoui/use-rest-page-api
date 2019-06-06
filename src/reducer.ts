@@ -116,6 +116,19 @@ function reducer<T>(state: State<T>, action: Action) {
         ...state,
         items: action.payload,
       };
+    case 'CLEAN_ITEMS':
+      return {
+        ...state,
+        items: [],
+        isLoading: false,
+        isError: false,
+        pagination: {
+          ...state.pagination,
+          pageNo: 0,
+          totalElements: 0,
+          sorts: [],
+        },
+      };
     default:
       return state;
   }

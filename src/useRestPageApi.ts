@@ -262,6 +262,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   }
 
   /**
+   * 清空列表数据
+   *
+   */
+  function clean() {
+    dispatch({ type: 'CLEAN_ITEMS' });
+  }
+
+  /**
    * 获取一条数据详情信息
    *
    * @param {string} id
@@ -408,6 +416,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
   return {
     ...state,
+    keyName,
     rawResponse: rawResponseRef.current,
     fetch,
     nextPage,
@@ -429,6 +438,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     query,
     reload,
     reset,
+    clean,
   };
 }
 

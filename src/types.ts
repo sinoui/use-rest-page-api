@@ -69,7 +69,11 @@ export interface PageResponse<T> {
 }
 
 /**
- * useRestPageApi配置信息
+ * 配置信息
+ *
+ * @export
+ * @interface Options
+ * @template T
  */
 export interface Options<T> {
   /**

@@ -291,7 +291,7 @@ describe('不与后端交互的操作', () => {
     (http.get as jest.Mock).mockResolvedValue({
       content: [{ userId: '1', userName: '张三' }],
       number: 0,
-      size: 1,
+      size: 15,
       totalElements: 1,
     });
 
@@ -433,6 +433,23 @@ describe('不与后端交互的操作', () => {
     result.current.removeItemsByIds(['2', '4']);
 
     expect(result.current.items.length).toBe(2);
+  });
+
+  it('清除数据', async () => {
+    const result = await init();
+    expect(result.current.items.length).toBe(1);
+
+    result.current.clean();
+
+    expect(result.current.isError).toBeFalsy();
+    expect(result.current.isLoading).toBeFalsy();
+    expect(result.current.items.length).toBe(0);
+    expect(result.current.pagination).toEqual({
+      pageNo: 0,
+      pageSize: 15,
+      sorts: [],
+      totalElements: 0,
+    });
   });
 });
 
