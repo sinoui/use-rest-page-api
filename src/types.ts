@@ -142,37 +142,123 @@ export interface Options<T> {
 }
 
 export interface RestPageResponseInfo<T, RawResponse> {
+  /**
+   * 分页信息
+   */
   pagination: PageInfo;
+  /**
+   * 列表数据
+   */
   items: any[];
+  /**
+   * 是否正在加载
+   */
   isLoading: boolean;
+  /**
+   * 是否加载出错
+   */
   isError: boolean;
+  /**
+   * 关键字，默认为`id`
+   */
   keyName: string;
+  /**
+   * 查询条件
+   */
   searchParams?: { [x: string]: string };
+  /**
+   * 默认查询字段
+   */
   defaultSearchParams?: { [x: string]: string };
+  /**
+   * 原始响应
+   */
   rawResponse?: RawResponse;
+  /**
+   * 获取列表数据
+   *
+   * @memberof RestPageResponseInfo
+   */
   fetch: (
     pageNo?: number,
     pageSize?: number,
     sorts?: SortInfo[],
     searchParams?: { [x: string]: string },
   ) => Promise<PageResponse<T>>;
+  /**
+   * 获取下一页数据
+   */
   nextPage: () => Promise<PageResponse<T>>;
+  /**
+   * 获取上一页数据
+   */
   prevPage: () => Promise<PageResponse<T>>;
+  /**
+   * 以xx排序
+   */
   sortWith: (sorts: SortInfo[]) => Promise<PageResponse<T>>;
+  /**
+   * 通过id获取一条数据
+   */
   getItemById: (itemId: string) => T;
+  /**
+   * 更新一条数据
+   */
   updateItem: (item: T) => T;
+  /**
+   * 部分更新一条数据
+   */
   setItem: (itemId: string, itemInfo: T) => T;
+  /**
+   * 替换items
+   */
   setItems: (itemsInfo: T[]) => void;
+  /**
+   * 添加一条数据
+   */
   addItem: (item: T) => void;
+  /**
+   * 删除指定id的数据
+   */
   removeItemById: (itemId: string) => void;
+  /**
+   * 删除指定行的数据
+   */
   removeItemAt: (index: number) => void;
+  /**
+   * 删除多条数据
+   */
   removeItemsByIds: (ids: string[]) => void;
+  /**
+   * 清空数据
+   */
   clean: () => void;
+  /**
+   * 获取数据详情
+   */
   get: (id: string, isNeedUpdate?: boolean) => Promise<T>;
+  /**
+   * 创建一条新的数据
+   */
   save: (itemInfo: T, isNeedUpdate?: boolean) => Promise<T>;
+  /**
+   * 更新数据
+   */
   update: (itemInfo: T, isNeedUpdate?: boolean) => Promise<T>;
+  /**
+   * 删除一条数据
+   */
   remove: (ids: string | string[], isNeedUpdate?: boolean) => void;
+  /**
+   * 列表查询
+   */
   query: (searchParams: { [x: string]: string }) => void;
+  /**
+   * 重新加载
+   */
   reload: () => void;
+  /**
+   * 重置
+   */
   reset: () => void;
 }
