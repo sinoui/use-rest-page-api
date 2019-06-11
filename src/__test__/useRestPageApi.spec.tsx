@@ -1,6 +1,8 @@
-import { renderHook, act } from 'react-hooks-testing-library';
+import { renderHook } from 'react-hooks-testing-library';
 import http, { HttpResponse } from '@sinoui/http';
 import qs from 'qs';
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
 import useRestPageApi from '../useRestPageApi';
 
 jest.mock('@sinoui/http');
@@ -1040,32 +1042,66 @@ it('transformUpdateRequest', async () => {
 });
 
 it('查询参数与history结合使用', () => {
-  window.history.pushState('', '', '?a=1');
-
-  const { result } = renderHook(() =>
-    useRestPageApi('/users', [], {
+  const { result } = renderHook(() => {
+    window.history.pushState('', '', '?a=1&pageNo=1');
+    return useRestPageApi('/users', [], {
       syncToUrl: true,
-    }),
-  );
+    });
+  });
 
   expect(result.current.searchParams).toEqual({
     a: '1',
   });
+  expect(result.current.pagination.pageNo).toBe(1);
+});
+
+let container: HTMLDivElement | null;
+beforeEach(() => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() => {
+  if (container) {
+    document.body.removeChild(container);
+    container = null;
+  }
 });
 
 it('查询参数发生变化，同步到history', () => {
   window.history.pushState('', '', '?');
-  const { result } = renderHook(() =>
-    useRestPageApi('/users', [], {
+  const TestComp = () => {
+    const dataSource = useRestPageApi('/users', [], {
       syncToUrl: true,
-    }),
+      defaultSearchParams: {
+        b: '2',
+      },
+      defaultSort: [
+        {
+          direction: 'asc',
+          property: 'age',
+        },
+      ],
+    });
+
+    return (
+      <div>
+        <button type="button" onClick={dataSource.reload}>
+          reload
+        </button>
+      </div>
+    );
+  };
+
+  const { getByText } = render(<TestComp />);
+
+  expect(window.location.search).toBe(
+    '?b=2&pageNo=0&pageSize=15&sorts%5B0%5D%5Bdirection%5D=asc&sorts%5B0%5D%5Bproperty%5D=age',
   );
 
-  act(() => {
-    result.current.query({
-      b: '2',
-    });
-  });
-
-  expect(window.location.search).toBe('?b=2');
+  // 刷新后，查询条件不变
+  fireEvent.click(getByText('reload'));
+  expect(window.location.search).toBe(
+    '?b=2&pageNo=0&pageSize=15&sorts%5B0%5D%5Bdirection%5D=asc&sorts%5B0%5D%5Bproperty%5D=age',
+  );
 });

@@ -1,22 +1,12 @@
-import { useReducer, useCallback, useRef, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useReducer, useCallback, useRef } from 'react';
 import http from '@sinoui/http';
-import qs from 'qs';
 import { PageResponse, Options, SortInfo, RestPageResponseInfo } from './types';
 import reducer from './reducer';
 import getSearchParams from './getSearchParams';
 import useEffect2 from './useEffect2';
-
-/**
- * 从history中获取查询参数
- */
-function getSearchParamsFromLocation() {
-  const { search } = window.location;
-
-  if (search && search.length > 1) {
-    return qs.parse(window.location.search.substr(1));
-  }
-  return null;
-}
+import useSearchParamsAndPageInfo from './useSearchParamsAndPageInfo';
+import useSyncToHistory from './useSyncToHistory';
 
 /**
  * 简化分页列表与RESTful CRUD API交互的状态管理的Hook
@@ -37,8 +27,6 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
   const {
     keyName = 'id',
-    syncToUrl,
-    defaultSearchParams,
     baseUrl = url,
     transformListRequest,
     transformListResponse,
@@ -47,13 +35,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     transformSaveResponse,
     transformUpdateRequest,
     transformUpdateResponse,
-  } = (options || {}) as Options<T>;
+    useMultiDeleteApi = true,
+  } = options;
+
+  const [defaultSearchParams, pageInfo] = useSearchParamsAndPageInfo(options);
 
   const defaultPagination = {
-    pageSize: options.pageSize || 15,
-    pageNo: options.pageNo || 0,
+    ...pageInfo,
     totalElements: defaultValue.length || 0,
-    sorts: options.defaultSort,
     totalPages:
       Math.ceil((defaultValue.length || 0) / (options.pageSize || 15)) || 0,
   };
@@ -62,10 +51,10 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     isLoading: false,
     items: defaultValue,
     pagination: defaultPagination,
-    searchParams: syncToUrl
-      ? getSearchParamsFromLocation() || defaultSearchParams
-      : defaultSearchParams,
+    searchParams: defaultSearchParams,
   });
+
+  useSyncToHistory(options.syncToUrl, state);
 
   const doFetch = useCallback(
     async (
@@ -104,26 +93,13 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   );
 
   useEffect2(() => {
-    const searchParams = syncToUrl
-      ? getSearchParamsFromLocation() || defaultSearchParams
-      : defaultSearchParams;
     doFetch(
       defaultPagination.pageNo,
       defaultPagination.pageSize,
       defaultPagination.sorts,
-      searchParams,
+      defaultSearchParams,
     );
   }, [url]);
-
-  useEffect(() => {
-    if (!syncToUrl) {
-      return;
-    }
-    const search = `?${qs.stringify(state.searchParams)}`;
-    if (search !== window.location.search) {
-      window.history.pushState(window.history.state, document.title, search);
-    }
-  }, [state.searchParams, syncToUrl]);
 
   /**
    * 获取数据
@@ -359,8 +335,6 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @returns {Promise<T>}
    */
   async function remove(ids: string | string[], isNeedUpdate: boolean = true) {
-    const { useMultiDeleteApi = true } = options || {};
-
     try {
       if (typeof ids !== 'string') {
         if (useMultiDeleteApi) {
@@ -434,7 +408,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     save,
     update,
     remove,
-    defaultSearchParams,
+    defaultSearchParams: options.defaultSearchParams,
     query,
     reload,
     reset,
