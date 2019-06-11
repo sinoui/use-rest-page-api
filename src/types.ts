@@ -35,6 +35,10 @@ export interface PageInfo {
    * 排序信息
    */
   sorts?: SortInfo[];
+  /**
+   * 总页数
+   */
+  totalPages: number;
 }
 
 /**
@@ -54,13 +58,13 @@ export interface PageResponse<T> {
    */
   totalElements: number;
   /**
-   * 一页显示多少条结果
+   * 一页显示多少条结果,可以没有，与请求中size保持一致
    */
-  size: number;
+  size?: number;
   /**
-   * 当前是第几页
+   * 当前是第几页,可以没有，与请求中number保持一致
    */
-  number: number;
+  number?: number;
 
   /**
    * 总页数，可以没有。如果没有，则等于`Math.ceil(totalElements/size)`。

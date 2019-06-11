@@ -93,6 +93,9 @@ function reducer<T>(state: State<T>, action: Action) {
               pageSize: action.payload.size,
               totalElements: action.payload.totalElements,
               sorts: action.payload.sorts,
+              totalPages: Math.ceil(
+                action.payload.totalElements / action.payload.size,
+              ),
             }
           : { ...state.pagination },
       };
@@ -127,6 +130,7 @@ function reducer<T>(state: State<T>, action: Action) {
           pageNo: 0,
           totalElements: 0,
           sorts: [],
+          totalPages: 0,
         },
       };
     default:

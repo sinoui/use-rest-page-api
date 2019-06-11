@@ -54,6 +54,8 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     pageNo: options.pageNo || 0,
     totalElements: defaultValue.length || 0,
     sorts: options.defaultSort,
+    totalPages:
+      Math.ceil((defaultValue.length || 0) / (options.pageSize || 15)) || 0,
   };
   const [state, dispatch] = useReducer(reducer, {
     isError: false,
@@ -88,7 +90,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
         dispatch({
           type: 'FETCH_SUCCESS',
-          payload: { ...result, sorts },
+          payload: { ...result, sorts, number: pageNo, size: pageSize },
         });
 
         rawResponseRef.current = result as any;

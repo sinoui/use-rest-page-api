@@ -31,6 +31,7 @@ it('只有url时获取数据成功', async () => {
     pageNo: 0,
     pageSize: 15,
     totalElements: 0,
+    totalPages: 0,
   });
 
   await waitForNextUpdate();
@@ -236,7 +237,7 @@ it('获取上一页数据', async () => {
 
   await waitForNextUpdate();
 
-  expect(result.current.pagination.pageNo).toBe(1);
+  expect(result.current.pagination.pageNo).toBe(0);
   expect(http.get).toHaveBeenCalledTimes(1);
 
   await result.current.prevPage();
@@ -449,6 +450,7 @@ describe('不与后端交互的操作', () => {
       pageSize: 15,
       sorts: [],
       totalElements: 0,
+      totalPages: 0,
     });
   });
 });
