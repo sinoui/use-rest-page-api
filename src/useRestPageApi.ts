@@ -41,7 +41,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     defaultSearchParams,
     baseUrl = url,
     transformListRequest,
-    transformListReponse,
+    transformListResponse,
     transformFetchOneResponse,
     transformSaveRequest,
     transformSaveResponse,
@@ -82,8 +82,8 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           url.includes('?') ? `${url}&${params}` : `${url}?${params}`,
         );
 
-        const result = transformListReponse
-          ? transformListReponse(response as any)
+        const result = transformListResponse
+          ? transformListResponse(response as any)
           : response;
 
         dispatch({
@@ -98,7 +98,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         throw e;
       }
     },
-    [transformListReponse, transformListRequest, url],
+    [transformListResponse, transformListRequest, url],
   );
 
   useEffect2(() => {

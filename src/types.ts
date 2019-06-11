@@ -111,7 +111,7 @@ export interface Options<T> {
   /**
    * 指定分页列表查询结果的转换器
    */
-  transformListReponse?: (response: HttpResponse) => PageResponse<any>;
+  transformListResponse?: (response: HttpResponse) => PageResponse<any>;
   /**
    * 指定分页查询条件转换器
    */

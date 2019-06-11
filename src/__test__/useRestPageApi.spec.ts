@@ -885,7 +885,7 @@ it('transferListResponse', async () => {
   const { result, waitForNextUpdate } = renderHook(() =>
     useRestPageApi('/test', undefined, {
       keyName: 'userId',
-      transformListReponse: (data: HttpResponse) => ({
+      transformListResponse: (data: HttpResponse) => ({
         content: data.data.content,
         totalElements: data.data.totalElements,
         size: data.data.size,
