@@ -661,6 +661,7 @@ it('更新数据详情', async () => {
     userName: '张三',
     age: 27,
   });
+  expect((http.put as jest.Mock).mock.calls[0][0]).toMatch('/test/1');
 
   const userInfo = await result.current.update({
     userId: '1',
