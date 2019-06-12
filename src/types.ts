@@ -252,11 +252,11 @@ export interface RestPageResponseInfo<T, RawResponse> {
   /**
    * 删除一条数据
    */
-  remove: (ids: string | string[], isNeedUpdate?: boolean) => void;
+  remove: (ids: string | string[], isNeedUpdate?: boolean) => Promise<any>;
   /**
    * 列表查询
    */
-  query: (searchParams: { [x: string]: string }) => void;
+  query: (searchParams: { [x: string]: string }) => Promise<PageResponse<T>>;
   /**
    * 重新加载
    */
