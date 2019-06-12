@@ -138,7 +138,7 @@ export interface Options<T> {
   /**
    * 指定更新数据的请求数据转换器
    */
-  transformUpdateRequest?: (request: HttpRequestConfig) => void;
+  transformUpdateRequest?: (request: HttpRequestConfig) => T;
   /**
    * 指定更新数据的响应数据转换器
    */

@@ -309,10 +309,10 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   async function update(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
     try {
-      const info = transformUpdateRequest
+      const info: any = transformUpdateRequest
         ? transformUpdateRequest(itemInfo)
         : itemInfo;
-      const response: T = await http.put(baseUrl, info);
+      const response: T = await http.put(`${baseUrl}/${info[keyName]}`, info);
 
       const result = transformUpdateResponse
         ? transformUpdateResponse(response as any)
