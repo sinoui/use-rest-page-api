@@ -3,6 +3,7 @@ import http, { HttpResponse } from '@sinoui/http';
 import qs from 'qs';
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
+import { async } from 'q';
 import useRestPageApi from '../useRestPageApi';
 
 jest.mock('@sinoui/http');
@@ -695,31 +696,106 @@ it('更新数据详情', async () => {
   ).rejects.toThrow('async error');
 });
 
-it('删除数据，与crud交互', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [
-      { userId: '1', userName: '张三', age: 27 },
-      { userId: '2', userName: '李四', age: 20 },
-      { userId: '3', userName: '李四', age: 20 },
-      { userId: '4', userName: '李四', age: 20 },
-      { userId: '5', userName: '李四', age: 20 },
-      { userId: '6', userName: '李四', age: 20 },
-      { userId: '7', userName: '李四', age: 20 },
-      { userId: '8', userName: '李四', age: 20 },
-      { userId: '9', userName: '李四', age: 20 },
-      { userId: '10', userName: '李四', age: 20 },
-    ],
-    number: 0,
-    size: 10,
-    totalElements: 2,
-  });
+it('删除多条数据，与crud交互', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '李四', age: 20 },
+        { userId: '4', userName: '李四', age: 20 },
+        { userId: '5', userName: '李四', age: 20 },
+        { userId: '6', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 8,
+    });
 
   (http.delete as jest.Mock)
     .mockResolvedValueOnce('删除成功')
     .mockResolvedValueOnce('删除成功')
-    .mockResolvedValueOnce('删除成功')
-    .mockResolvedValueOnce('删除成功')
     .mockRejectedValueOnce(new Error('失败'));
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, { keyName: 'userId' }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.items.length).toBe(10);
+
+  await result.current.remove(['3', '4'], false);
+
+  expect(result.current.items.length).toBe(10);
+
+  await result.current.remove(['5', '6']);
+
+  expect(result.current.items.length).toBe(8);
+  expect(http.get).toBeCalledTimes(2);
+
+  await waitForNextUpdate();
+  expect(result.current.items.length).toBe(6);
+
+  await expect(result.current.remove('1')).rejects.toThrow('失败');
+});
+
+it('删除一条数据,与crud交互', async () => {
+  (http.get as jest.Mock)
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '2', userName: '李四', age: 20 },
+        { userId: '3', userName: '李四', age: 20 },
+        { userId: '4', userName: '李四', age: 20 },
+        { userId: '5', userName: '李四', age: 20 },
+        { userId: '6', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 2,
+    })
+    .mockResolvedValueOnce({
+      content: [
+        { userId: '1', userName: '张三', age: 27 },
+        { userId: '3', userName: '李四', age: 20 },
+        { userId: '4', userName: '李四', age: 20 },
+        { userId: '5', userName: '李四', age: 20 },
+        { userId: '6', userName: '李四', age: 20 },
+        { userId: '7', userName: '李四', age: 20 },
+        { userId: '8', userName: '李四', age: 20 },
+        { userId: '9', userName: '李四', age: 20 },
+        { userId: '10', userName: '李四', age: 20 },
+      ],
+      number: 0,
+      size: 10,
+      totalElements: 9,
+    });
+
+  (http.delete as jest.Mock)
+    .mockResolvedValueOnce('删除成功')
+    .mockResolvedValueOnce('删除成功');
 
   const { result, waitForNextUpdate } = renderHook(() =>
     useRestPageApi('/test', undefined, { keyName: 'userId' }),
@@ -736,16 +812,7 @@ it('删除数据，与crud交互', async () => {
   await result.current.remove('2');
 
   expect(result.current.items.length).toBe(9);
-
-  await result.current.remove(['3', '4'], false);
-
-  expect(result.current.items.length).toBe(9);
-
-  await result.current.remove(['5', '6']);
-
-  expect(result.current.items.length).toBe(7);
-
-  await expect(result.current.remove('1')).rejects.toThrow('失败');
+  expect(http.get).toBeCalledTimes(2);
 });
 
 it('配置不允许删除多项', async () => {

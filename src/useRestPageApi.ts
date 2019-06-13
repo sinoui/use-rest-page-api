@@ -252,6 +252,16 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   }
 
   /**
+   * 重新加载数据
+   *
+   * @returns
+   */
+  function reload() {
+    const { pageNo, pageSize, sorts } = state.pagination;
+    return doFetch(pageNo, pageSize, sorts, state.searchParams);
+  }
+
+  /**
    * 获取一条数据详情信息
    *
    * @param {string} id
@@ -293,6 +303,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
       if (isNeedUpdate) {
         addItem(result);
+        reload();
       }
 
       return result;
@@ -342,6 +353,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
           if (isNeedUpdate) {
             removeItemsByIds(ids);
+            reload();
           }
         }
       } else {
@@ -349,6 +361,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
         if (isNeedUpdate) {
           removeItemById(ids as string);
+          reload();
         }
       }
     } catch (error) {
@@ -366,16 +379,6 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     const { pageSize, sorts } = state.pagination;
 
     return doFetch(0, pageSize, sorts, searchParams);
-  }
-
-  /**
-   * 重新加载数据
-   *
-   * @returns
-   */
-  function reload() {
-    const { pageNo, pageSize, sorts } = state.pagination;
-    return doFetch(pageNo, pageSize, sorts, state.searchParams);
   }
 
   /**
