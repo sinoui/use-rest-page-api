@@ -3,7 +3,6 @@ import http, { HttpResponse } from '@sinoui/http';
 import qs from 'qs';
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { async } from 'q';
 import useRestPageApi from '../useRestPageApi';
 
 jest.mock('@sinoui/http');
