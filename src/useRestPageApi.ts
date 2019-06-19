@@ -70,7 +70,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           ? transformListRequest(searchParams, { pageNo, pageSize, sorts })
           : getSearchParams(pageNo, pageSize, sorts, searchParams);
         const response = await http.get<PageResponse<T>>(
-          url.includes('?') ? `${url}&${params}` : `${url}?${params}`,
+          url.indexOf('?') !== -1 ? `${url}&${params}` : `${url}?${params}`,
         );
 
         const result = transformListResponse
