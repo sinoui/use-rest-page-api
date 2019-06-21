@@ -597,10 +597,10 @@ const dataSource = useRestPageApi<User, ListRawResponse>('/users');
  // 获取当前页列表数据
 const users: User[] = dataSource.items;
 
-// 获取id为'1'的用户数据
+// 获取id为'1'的数据
 const user: User = dataSource.getItemById('1');
 
-// 更新id为'1'的用户数据
+// 更新id为'1'的数据
 const newUser = {...user, 'sex': 'female'};
 dataSource.updateItem(newUser);
 
@@ -614,7 +614,7 @@ dataSource.setItems([{id:'1',birthday:'2019-01-01'},{id:'2',age:32}])
 // 新增
 dataSource.addItem({id: '5', firstName: '赵'， lastName: '六'});
 
-// 删除id为'1'的用户数据
+// 删除id为'1'的数据
 dataSource.removeItemById('3');
 
 // 删除多条数据
