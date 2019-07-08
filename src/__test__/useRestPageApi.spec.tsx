@@ -1196,16 +1196,17 @@ it('删除数据响应数据转换器', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transformRemoveResponse: (response: any) => {
         if (response.code === 200) {
-          console.log(response.msg);
+          throw new Error(response.msg);
         }
       },
     }),
   );
 
   await waitForNextUpdate();
+  expect(result.current.items.length).toBe(2);
+  expect(http.get).toHaveBeenCalledTimes(1);
 
-  await result.current.remove('2');
-
-  expect(result.current.items.length).toBe(1);
-  expect(http.get).toHaveBeenCalledTimes(2);
+  await expect(result.current.remove('2')).rejects.toThrow('数据库不允许操作');
+  expect(result.current.items.length).toBe(2);
+  expect(http.get).toHaveBeenCalledTimes(1);
 });
