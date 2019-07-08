@@ -35,6 +35,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     transformSaveResponse,
     transformUpdateRequest,
     transformUpdateResponse,
+    transformRemoveResponse,
     useMultiDeleteApi = true,
   } = options;
 
@@ -349,7 +350,11 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     try {
       if (typeof ids !== 'string') {
         if (useMultiDeleteApi) {
-          await http.delete(`${baseUrl}/${ids.join(',')}`);
+          const response: T = await http.delete(`${baseUrl}/${ids.join(',')}`);
+
+          if (transformRemoveResponse) {
+            transformRemoveResponse(response);
+          }
 
           if (isNeedUpdate) {
             removeItemsByIds(ids);
@@ -357,7 +362,11 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           }
         }
       } else {
-        await http.delete(`${baseUrl}/${ids}`);
+        const response: T = await http.delete(`${baseUrl}/${ids}`);
+
+        if (transformRemoveResponse) {
+          transformRemoveResponse(response);
+        }
 
         if (isNeedUpdate) {
           removeItemById(ids as string);

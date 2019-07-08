@@ -754,6 +754,7 @@ it('删除多条数据，与crud交互', async () => {
   expect(result.current.items.length).toBe(6);
 
   await expect(result.current.remove('1')).rejects.toThrow('失败');
+  expect(http.get).toHaveBeenCalledTimes(2);
 });
 
 it('删除一条数据,与crud交互', async () => {
@@ -1171,4 +1172,40 @@ it('查询参数发生变化，同步到history', () => {
   expect(window.location.search).toBe(
     '?b=2&pageNo=0&pageSize=15&sorts%5B0%5D%5Bdirection%5D=asc&sorts%5B0%5D%5Bproperty%5D=age',
   );
+});
+
+it('删除数据响应数据转换器', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+
+  (http.delete as jest.Mock)
+    .mockResolvedValueOnce({ code: 200, msg: '数据库不允许操作' })
+    .mockResolvedValueOnce('删除成功')
+    .mockRejectedValueOnce(new Error('失败'));
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformRemoveResponse: (response: any) => {
+        if (response.code === 200) {
+          console.log(response.msg);
+        }
+      },
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  await result.current.remove('2');
+
+  expect(result.current.items.length).toBe(1);
+  expect(http.get).toHaveBeenCalledTimes(2);
 });

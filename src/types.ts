@@ -143,6 +143,10 @@ export interface Options<T> {
    * 指定更新数据的响应数据转换器
    */
   transformUpdateResponse?: (response: HttpResponse) => T;
+  /**
+   * 指定删除数据的响应数据转换器
+   */
+  transformRemoveResponse?: (response: HttpRequestConfig) => void;
 }
 
 export interface RestPageResponseInfo<T, RawResponse> {
@@ -153,6 +157,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
   /**
    * 列表数据
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[];
   /**
    * 是否正在加载

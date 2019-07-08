@@ -373,6 +373,7 @@ const dataSource = useRestPageApi<T, PageData>(
 - `transformSaveResponse` - 指定新增数据的响应数据转换器。
 - `transformUpdateRequest` - 指定更新数据的请求数据转换器。
 - `transformUpdateResponse` - 指定更新数据的响应数据转换器。
+- `transformRemoveResponse` - 指定删除数据的响应数据转换器。
 
 转换器可以用来定制你的 API 细节。会用一个章节来介绍。
 
