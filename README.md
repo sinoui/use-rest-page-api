@@ -584,6 +584,27 @@ function transformSaveResponse(responseData: ResponseData): User {
 
 使用`transformUpdateResponse`定制更新请求。用法与[transformSaveResponse](#定制新增响应的数据转换器)一致。
 
+### 定制删除响应的数据转换器
+
+使用`transformRemoveResponse`转换删除数据的响应格式：
+
+```ts
+/** 删除API的响应数据结构 */
+interface ResponseData {
+    code:string;
+    msg:string;
+}
+
+function transformRemoveResponse(response:ResponseData):void {
+    if(code==='200'){
+        alert('删除成功');
+    } else {
+        alert('删除失败')；
+        throw new Error(response.msg);
+    }
+}
+```
+
 ## dataSource 的属性和方法
 
 ```ts

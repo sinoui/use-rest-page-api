@@ -1,6 +1,6 @@
 {
   "name": "@sinoui/use-rest-page-api",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "简化分页列表与RESTful CRUD API交互的状态管理",
   "license": "MIT",
   "main": "dist/index.js",
