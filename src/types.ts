@@ -158,7 +158,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
    * 列表数据
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  items: any[];
+  items: T[];
   /**
    * 是否正在加载
    */
@@ -209,7 +209,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
   /**
    * 通过id获取一条数据
    */
-  getItemById: (itemId: string) => T;
+  getItemById: (itemId: string) => T | undefined;
   /**
    * 更新一条数据
    */

@@ -14,6 +14,11 @@ export interface State<T> {
   pagination: PageInfo;
   searchParams?: { [x: string]: string };
 }
+
+export interface Reducer<T> {
+  (state: State<T>, action: Action): State<T>;
+}
+
 /**
  * 更新数据时更新state
  *
