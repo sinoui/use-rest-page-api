@@ -157,7 +157,6 @@ export interface RestPageResponseInfo<T, RawResponse> {
   /**
    * 列表数据
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: T[];
   /**
    * 是否正在加载
@@ -217,7 +216,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
   /**
    * 部分更新一条数据
    */
-  setItem: (itemId: string, itemInfo: T) => T;
+  setItem: (itemId: string, itemInfo: T) => void;
   /**
    * 替换items
    */

@@ -326,12 +326,12 @@ describe('不与后端交互的操作', () => {
   it('部分字段更新', async () => {
     const result = await init();
 
-    const newUser = result.current.setItem('1', {
+    result.current.setItem('1', {
       age: 26,
       birthday: '1993-08-16',
     });
 
-    expect(newUser).toEqual({
+    expect(result.current.items[0]).toEqual({
       userId: '1',
       userName: '张三',
       age: 26,

@@ -1,5 +1,10 @@
 # 版本变更说明
 
+## v0.3.0
+
+- breakchange: setItem 方法不再返回更新之后的`item`
+- improve: 缓存回调函数
+
 ## v0.2.1 - 2019.7.15
 
 - fix: 修复 useRestPageApi 返回值`items`的类型为`any`的缺陷

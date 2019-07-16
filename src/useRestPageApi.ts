@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useReducer, useCallback, useRef } from 'react';
+import { useReducer, useCallback, useRef, useMemo } from 'react';
 import http from '@sinoui/http';
 import { PageResponse, Options, SortInfo, RestPageResponseInfo } from './types';
 import reducer, { Reducer } from './reducer';
@@ -41,12 +41,15 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
 
   const [defaultSearchParams, pageInfo] = useSearchParamsAndPageInfo(options);
 
-  const defaultPagination = {
-    ...pageInfo,
-    totalElements: defaultValue.length || 0,
-    totalPages:
-      Math.ceil((defaultValue.length || 0) / (options.pageSize || 15)) || 0,
-  };
+  const defaultPagination = useMemo(() => {
+    return {
+      ...pageInfo,
+      totalElements: defaultValue.length || 0,
+      totalPages:
+        Math.ceil((defaultValue.length || 0) / (options.pageSize || 15)) || 0,
+    };
+  }, [defaultValue.length, options.pageSize, pageInfo]);
+
   const [state, dispatch] = useReducer<Reducer<T>>(reducer, {
     isError: false,
     isLoading: false,
@@ -122,23 +125,23 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    *
    * @returns
    */
-  function nextPage(): Promise<PageResponse<T>> {
+  const nextPage = useCallback(() => {
     const { pageNo, pageSize, totalElements, sorts } = state.pagination;
     const totalPages = Math.ceil(totalElements / pageSize);
 
     return doFetch(Math.min(totalPages - 1, pageNo + 1), pageSize, sorts);
-  }
+  }, [doFetch, state.pagination]);
 
   /**
    * 获取上一页数据
    *
    * @returns
    */
-  function prevPage(): Promise<PageResponse<T>> {
+  const prevPage = useCallback(() => {
     const { pageNo, pageSize, sorts } = state.pagination;
 
     return doFetch(Math.max(0, pageNo - 1), pageSize, sorts);
-  }
+  }, [doFetch, state.pagination]);
 
   /**
    * 列表排序
@@ -146,9 +149,12 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {SortInfo[]} sorts
    * @returns {Promise<PageResponse<T>>}
    */
-  function sortWith(sorts: SortInfo[]): Promise<PageResponse<T>> {
-    return doFetch(state.pagination.pageNo, state.pagination.pageSize, sorts);
-  }
+  const sortWith = useCallback(
+    (sorts: SortInfo[]) => {
+      return doFetch(state.pagination.pageNo, state.pagination.pageSize, sorts);
+    },
+    [doFetch, state.pagination.pageNo, state.pagination.pageSize],
+  );
 
   /**
    * 获取指定id的数据
@@ -166,11 +172,14 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {T} item
    * @returns {T}
    */
-  function updateItem(item: T): T {
-    dispatch({ type: 'UPDATE_ITEM', payload: { item, keyName } });
+  const updateItem = useCallback(
+    (item: T) => {
+      dispatch({ type: 'UPDATE_ITEM', payload: { item, keyName } });
 
-    return item;
-  }
+      return item;
+    },
+    [keyName],
+  );
 
   /**
    * 更新指定数据的部分字段
@@ -179,88 +188,93 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {T} itemInfo 要更新的字段信息
    * @returns {T}
    */
-  function setItem(itemId: string, itemInfo: T): T {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const item = state.items.find((data: any) => data[keyName] === itemId);
-    const newItem = { ...item, ...itemInfo };
+  const setItem = useCallback(
+    (itemId: string, itemInfo: T) => {
+      dispatch({
+        type: 'SET_ITEM',
+        payload: { extraItemInfo: itemInfo, keyName, itemId },
+      });
+    },
+    [keyName],
+  );
 
-    dispatch({
-      type: 'UPDATE_ITEM',
-      payload: { item: newItem, keyName },
-    });
-
-    return newItem;
-  }
   /**
    * 替换数据
    *
    * @param {T[]} itemsInfo
    */
-  function setItems(itemsInfo: T[]) {
+  const setItems = useCallback((itemsInfo: T[]) => {
     dispatch({ type: 'SET_ITEMS', payload: itemsInfo });
-  }
+  }, []);
 
   /**
    * 新增一条列表数据
    *
    * @param {T} item
    */
-  function addItem(item: T) {
+  const addItem = useCallback((item: T) => {
     dispatch({
       type: 'ADD_ITEM',
       payload: item,
     });
-  }
+  }, []);
+
   /**
    * 根据id删除一条数据
    *
    * @param {string} itemId
    */
-  function removeItemById(itemId: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const idx = state.items.findIndex((item: any) => item[keyName] === itemId);
-    dispatch({ type: 'REMOVE_ITEM', payload: [idx] });
-  }
+  const removeItemById = useCallback(
+    (itemId: string) => {
+      dispatch({
+        type: 'REMOVE_ITEM_BY_ID',
+        payload: { itemIds: [itemId], keyName },
+      });
+    },
+    [keyName],
+  );
 
   /**
    * 删除指定行的数据
    *
    * @param {number} index
    */
-  function removeItemAt(index: number) {
+  const removeItemAt = useCallback((index: number) => {
     dispatch({ type: 'REMOVE_ITEM', payload: [index] });
-  }
+  }, []);
 
   /**
    * 删除多条数据
    *
    * @param {string[]} ids
    */
-  function removeItemsByIds(ids: string[]) {
-    const idxs = ids.map((id) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      state.items.findIndex((item: any) => item[keyName] === id),
-    );
-    dispatch({ type: 'REMOVE_ITEM', payload: idxs });
-  }
+  const removeItemsByIds = useCallback(
+    (ids: string[]) => {
+      dispatch({
+        type: 'REMOVE_ITEM_BY_ID',
+        payload: { itemIds: ids, keyName },
+      });
+    },
+    [keyName],
+  );
 
   /**
    * 清空列表数据
    *
    */
-  function clean() {
+  const clean = useCallback(() => {
     dispatch({ type: 'CLEAN_ITEMS' });
-  }
+  }, []);
 
   /**
    * 重新加载数据
    *
    * @returns
    */
-  function reload() {
+  const reload = useCallback(() => {
     const { pageNo, pageSize, sorts } = state.pagination;
     return doFetch(pageNo, pageSize, sorts, state.searchParams);
-  }
+  }, [doFetch, state.pagination, state.searchParams]);
 
   /**
    * 获取一条数据详情信息
@@ -269,22 +283,26 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
-    try {
-      const response: T = await http.get(`${baseUrl}/${id}`);
-      const result = transformFetchOneResponse
-        ? transformFetchOneResponse(response as any)
-        : response;
+  const get = useCallback(
+    async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
+      try {
+        const response: T = await http.get(`${baseUrl}/${id}`);
+        const result = transformFetchOneResponse
+          ? transformFetchOneResponse(response as any)
+          : response;
 
-      if (isNeedUpdate) {
-        updateItem(result);
+        if (isNeedUpdate) {
+          updateItem(result);
+        }
+
+        return result;
+      } catch (error) {
+        throw error;
       }
+    },
+    [baseUrl, transformFetchOneResponse, updateItem],
+  );
 
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
   /**
    * 新增数据
    *
@@ -292,26 +310,30 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
-    try {
-      const info = transformSaveRequest
-        ? transformSaveRequest(itemInfo)
-        : itemInfo;
-      const response: T = await http.post(baseUrl, info);
-      const result = transformSaveResponse
-        ? transformSaveResponse(response as any)
-        : response;
+  const save = useCallback(
+    async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
+      try {
+        const info = transformSaveRequest
+          ? transformSaveRequest(itemInfo)
+          : itemInfo;
+        const response: T = await http.post(baseUrl, info);
+        const result = transformSaveResponse
+          ? transformSaveResponse(response as any)
+          : response;
 
-      if (isNeedUpdate) {
-        addItem(result);
-        reload();
+        if (isNeedUpdate) {
+          addItem(result);
+          reload();
+        }
+
+        return result;
+      } catch (error) {
+        throw error;
       }
+    },
+    [addItem, baseUrl, reload, transformSaveRequest, transformSaveResponse],
+  );
 
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
   /**
    * 更新数据信息
    *
@@ -319,26 +341,39 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function update(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
-    try {
-      const info: any = transformUpdateRequest
-        ? transformUpdateRequest(itemInfo)
-        : itemInfo;
-      const response: T = await http.put(`${baseUrl}/${info[keyName]}`, info);
+  const update = useCallback(
+    async function update(
+      itemInfo: T,
+      isNeedUpdate: boolean = true,
+    ): Promise<T> {
+      try {
+        const info: any = transformUpdateRequest
+          ? transformUpdateRequest(itemInfo)
+          : itemInfo;
+        const response: T = await http.put(`${baseUrl}/${info[keyName]}`, info);
 
-      const result = transformUpdateResponse
-        ? transformUpdateResponse(response as any)
-        : response;
+        const result = transformUpdateResponse
+          ? transformUpdateResponse(response as any)
+          : response;
 
-      if (isNeedUpdate) {
-        updateItem(result);
+        if (isNeedUpdate) {
+          updateItem(result);
+        }
+
+        return result;
+      } catch (error) {
+        throw error;
       }
+    },
+    [
+      baseUrl,
+      keyName,
+      transformUpdateRequest,
+      transformUpdateResponse,
+      updateItem,
+    ],
+  );
 
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
   /**
    * 删除数据
    *
@@ -346,37 +381,52 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {boolean} [isNeedUpdate=true]
    * @returns {Promise<T>}
    */
-  async function remove(ids: string | string[], isNeedUpdate: boolean = true) {
-    try {
-      if (typeof ids !== 'string') {
-        if (useMultiDeleteApi) {
-          const response: T = await http.delete(`${baseUrl}/${ids.join(',')}`);
+  const remove = useCallback(
+    async function remove(
+      ids: string | string[],
+      isNeedUpdate: boolean = true,
+    ) {
+      try {
+        if (typeof ids !== 'string') {
+          if (useMultiDeleteApi) {
+            const response: T = await http.delete(
+              `${baseUrl}/${ids.join(',')}`,
+            );
+
+            if (transformRemoveResponse) {
+              transformRemoveResponse(response);
+            }
+
+            if (isNeedUpdate) {
+              removeItemsByIds(ids);
+              reload();
+            }
+          }
+        } else {
+          const response: T = await http.delete(`${baseUrl}/${ids}`);
 
           if (transformRemoveResponse) {
             transformRemoveResponse(response);
           }
 
           if (isNeedUpdate) {
-            removeItemsByIds(ids);
+            removeItemById(ids as string);
             reload();
           }
         }
-      } else {
-        const response: T = await http.delete(`${baseUrl}/${ids}`);
-
-        if (transformRemoveResponse) {
-          transformRemoveResponse(response);
-        }
-
-        if (isNeedUpdate) {
-          removeItemById(ids as string);
-          reload();
-        }
+      } catch (error) {
+        throw error;
       }
-    } catch (error) {
-      throw error;
-    }
-  }
+    },
+    [
+      baseUrl,
+      reload,
+      removeItemById,
+      removeItemsByIds,
+      transformRemoveResponse,
+      useMultiDeleteApi,
+    ],
+  );
 
   /**
    * 查询数据
@@ -384,21 +434,24 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    * @param {{ [x: string]: string }} searchParams
    * @returns
    */
-  function query(searchParams: { [x: string]: string }) {
-    const { pageSize, sorts } = state.pagination;
+  const query = useCallback(
+    (searchParams: { [x: string]: string }) => {
+      const { pageSize, sorts } = state.pagination;
 
-    return doFetch(0, pageSize, sorts, searchParams);
-  }
+      return doFetch(0, pageSize, sorts, searchParams);
+    },
+    [doFetch, state.pagination],
+  );
 
   /**
    * 重置查询条件并完成一次查询
    *
    * @returns
    */
-  function reset() {
+  const reset = useCallback(() => {
     const { pageNo, pageSize, sorts } = state.pagination;
     return doFetch(pageNo, pageSize, sorts, defaultSearchParams);
-  }
+  }, [defaultSearchParams, doFetch, state.pagination]);
 
   return {
     ...state,
@@ -420,7 +473,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     save,
     update,
     remove,
-    defaultSearchParams: options.defaultSearchParams,
+    defaultSearchParams,
     query,
     reload,
     reset,
