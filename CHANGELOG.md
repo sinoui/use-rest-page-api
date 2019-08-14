@@ -4,6 +4,7 @@
 
 - fix:修复 useRestPageApi 的 crud 响应转换器类型声明错误
 - breakchange: rawResponse 在有转换器的情况下返回值是直接获取来的数据而不是转换后的数据
+- improve: 添加`setDefaultSearchParams`方法更新默认查询条件
 
 ## v0.3.0
 

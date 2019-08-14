@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useReducer, useCallback, useRef, useMemo } from 'react';
+import { useReducer, useCallback, useRef, useMemo, useEffect } from 'react';
 import http from '@sinoui/http';
 import { PageResponse, Options, SortInfo, RestPageResponseInfo } from './types';
 import reducer, { Reducer } from './reducer';
@@ -40,6 +40,9 @@ function useRestPageApi<T, RawResponse = any>(
   } = options;
 
   const [defaultSearchParams, pageInfo] = useSearchParamsAndPageInfo(options);
+  const defaultSearchParamsRef = useRef<{ [x: string]: any } | undefined>(
+    defaultSearchParams,
+  );
 
   const defaultPagination = useMemo(() => {
     return {
@@ -55,7 +58,7 @@ function useRestPageApi<T, RawResponse = any>(
     isLoading: false,
     items: defaultValue,
     pagination: defaultPagination,
-    searchParams: defaultSearchParams,
+    searchParams: defaultSearchParamsRef.current,
   });
 
   useSyncToHistory(options.syncToUrl, state);
@@ -101,7 +104,7 @@ function useRestPageApi<T, RawResponse = any>(
       defaultPagination.pageNo,
       defaultPagination.pageSize,
       defaultPagination.sorts,
-      defaultSearchParams,
+      defaultSearchParamsRef.current,
     );
   }, [url]);
 
@@ -450,8 +453,21 @@ function useRestPageApi<T, RawResponse = any>(
    */
   const reset = useCallback(() => {
     const { pageNo, pageSize, sorts } = state.pagination;
-    return doFetch(pageNo, pageSize, sorts, defaultSearchParams);
-  }, [defaultSearchParams, doFetch, state.pagination]);
+    return doFetch(pageNo, pageSize, sorts, defaultSearchParamsRef.current);
+  }, [doFetch, state.pagination]);
+
+  /**
+   * 设置默认查询条件并完成一次查询
+   *
+   * @returns
+   */
+  const setDefaultSearchParams = useCallback(
+    (searchParams: { [x: string]: string }) => {
+      defaultSearchParamsRef.current = searchParams;
+      return query(searchParams);
+    },
+    [query],
+  );
 
   return {
     ...state,
@@ -473,11 +489,12 @@ function useRestPageApi<T, RawResponse = any>(
     save,
     update,
     remove,
-    defaultSearchParams,
+    defaultSearchParams: defaultSearchParamsRef.current,
     query,
     reload,
     reset,
     clean,
+    setDefaultSearchParams,
   };
 }
 

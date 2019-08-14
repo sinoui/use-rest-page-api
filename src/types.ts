@@ -270,4 +270,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
    * 重置
    */
   reset: () => void;
+  setDefaultSearchParams: (searchParams: {
+    [x: string]: string;
+  }) => Promise<PageResponse<T>>;
 }

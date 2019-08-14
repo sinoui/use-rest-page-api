@@ -1241,3 +1241,36 @@ it('获取列表数据时，即使有转化器，rawResponse是转换前的值',
 
   expect(result.current.rawResponse).toEqual(rawResponse);
 });
+
+it('设置默认查询条件，获取数据会使用新的默认查询条件', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+  const defaultSearchParams = { userName: '张三' };
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      defaultSearchParams,
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.defaultSearchParams).toEqual({ userName: '张三' });
+  expect(result.current.searchParams).toEqual({ userName: '张三' });
+
+  result.current.setDefaultSearchParams({ userName: '李四' });
+
+  await waitForNextUpdate();
+
+  expect(http.get).toHaveBeenCalledTimes(2);
+  expect(result.current.defaultSearchParams).toEqual({ userName: '李四' });
+  expect(result.current.searchParams).toEqual({ userName: '李四' });
+});
