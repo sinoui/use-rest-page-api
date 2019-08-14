@@ -18,7 +18,7 @@ import useSyncToHistory from './useSyncToHistory';
  * @param {Options<T>} [options] 配置项
  * @returns
  */
-function useRestPageApi<T, RawResponse = PageResponse<T>>(
+function useRestPageApi<T, RawResponse = any>(
   url: string,
   defaultValue: T[] = [],
   options: Options<T> = {},
@@ -86,7 +86,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           payload: { ...result, sorts, number: pageNo, size: pageSize },
         });
 
-        rawResponseRef.current = result as any;
+        rawResponseRef.current = response as any;
         return result;
       } catch (e) {
         dispatch({ type: 'FETCH_FAILURE' });
