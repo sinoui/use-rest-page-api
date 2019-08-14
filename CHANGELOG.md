@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.4.0
+
+- fix:修复 useRestPageApi 的 crud 响应转换器类型声明错误
+
 ## v0.3.0
 
 - breakchange: setItem 方法不再返回更新之后的`item`

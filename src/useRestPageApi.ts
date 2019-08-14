@@ -78,7 +78,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         );
 
         const result = transformListResponse
-          ? transformListResponse(response as any)
+          ? transformListResponse(response)
           : response;
 
         dispatch({
@@ -288,7 +288,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       try {
         const response: T = await http.get(`${baseUrl}/${id}`);
         const result = transformFetchOneResponse
-          ? transformFetchOneResponse(response as any)
+          ? transformFetchOneResponse(response)
           : response;
 
         if (isNeedUpdate) {
@@ -318,7 +318,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           : itemInfo;
         const response: T = await http.post(baseUrl, info);
         const result = transformSaveResponse
-          ? transformSaveResponse(response as any)
+          ? transformSaveResponse(response)
           : response;
 
         if (isNeedUpdate) {
@@ -353,7 +353,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         const response: T = await http.put(`${baseUrl}/${info[keyName]}`, info);
 
         const result = transformUpdateResponse
-          ? transformUpdateResponse(response as any)
+          ? transformUpdateResponse(response)
           : response;
 
         if (isNeedUpdate) {
