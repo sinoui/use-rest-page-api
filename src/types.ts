@@ -1,4 +1,5 @@
-import { HttpRequestConfig, HttpResponse } from '@sinoui/http';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { HttpRequestConfig } from '@sinoui/http';
 /**
  * 排序信息
  */
@@ -115,7 +116,7 @@ export interface Options<T> {
   /**
    * 指定分页列表查询结果的转换器
    */
-  transformListResponse?: (response: HttpResponse) => PageResponse<any>;
+  transformListResponse?: (response: any) => PageResponse<T>;
   /**
    * 指定分页查询条件转换器
    */
@@ -126,7 +127,7 @@ export interface Options<T> {
   /**
    * 指定获取单条数据的响应数据转换器
    */
-  transformFetchOneResponse?: (response: HttpResponse) => T;
+  transformFetchOneResponse?: (response: any) => T;
   /**
    * 指定新增数据的请求数据转换器
    */
@@ -134,7 +135,7 @@ export interface Options<T> {
   /**
    * 指定新增数据的响应数据转换器
    */
-  transformSaveResponse?: (response: HttpResponse) => T;
+  transformSaveResponse?: (response: any) => T;
   /**
    * 指定更新数据的请求数据转换器
    */
@@ -142,7 +143,7 @@ export interface Options<T> {
   /**
    * 指定更新数据的响应数据转换器
    */
-  transformUpdateResponse?: (response: HttpResponse) => T;
+  transformUpdateResponse?: (response: any) => T;
   /**
    * 指定删除数据的响应数据转换器
    */
@@ -269,4 +270,7 @@ export interface RestPageResponseInfo<T, RawResponse> {
    * 重置
    */
   reset: () => void;
+  setDefaultSearchParams: (searchParams: {
+    [x: string]: string;
+  }) => Promise<PageResponse<T>>;
 }

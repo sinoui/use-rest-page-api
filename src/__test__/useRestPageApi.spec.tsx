@@ -1210,3 +1210,67 @@ it('删除数据响应数据转换器', async () => {
   expect(result.current.items.length).toBe(2);
   expect(http.get).toHaveBeenCalledTimes(1);
 });
+
+it('获取列表数据时，即使有转化器，rawResponse是转换前的值', async () => {
+  const rawResponse = {
+    data: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  };
+  (http.get as jest.Mock).mockResolvedValue(rawResponse);
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      transformListResponse: (response: any) => ({
+        content: response.data,
+        number: response.number,
+        size: response.size,
+        totalElements: response.totalElements,
+      }),
+    }),
+  );
+  await waitForNextUpdate();
+
+  result.current.fetch();
+  await waitForNextUpdate();
+
+  expect(result.current.rawResponse).toEqual(rawResponse);
+});
+
+it('设置默认查询条件，获取数据会使用新的默认查询条件', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '1', userName: '张三', age: 27 },
+    ],
+    number: 0,
+    size: 10,
+    totalElements: 2,
+  });
+  const defaultSearchParams = { userName: '张三' };
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useRestPageApi('/test', undefined, {
+      keyName: 'userId',
+      defaultSearchParams,
+    }),
+  );
+
+  await waitForNextUpdate();
+
+  expect(result.current.defaultSearchParams).toEqual({ userName: '张三' });
+  expect(result.current.searchParams).toEqual({ userName: '张三' });
+
+  result.current.setDefaultSearchParams({ userName: '李四' });
+
+  await waitForNextUpdate();
+
+  expect(http.get).toHaveBeenCalledTimes(2);
+  expect(result.current.defaultSearchParams).toEqual({ userName: '李四' });
+  expect(result.current.searchParams).toEqual({ userName: '李四' });
+});

@@ -18,7 +18,7 @@ import useSyncToHistory from './useSyncToHistory';
  * @param {Options<T>} [options] 配置项
  * @returns
  */
-function useRestPageApi<T, RawResponse = PageResponse<T>>(
+function useRestPageApi<T, RawResponse = any>(
   url: string,
   defaultValue: T[] = [],
   options: Options<T> = {},
@@ -40,6 +40,9 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
   } = options;
 
   const [defaultSearchParams, pageInfo] = useSearchParamsAndPageInfo(options);
+  const defaultSearchParamsRef = useRef<{ [x: string]: any } | undefined>(
+    defaultSearchParams,
+  );
 
   const defaultPagination = useMemo(() => {
     return {
@@ -55,7 +58,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     isLoading: false,
     items: defaultValue,
     pagination: defaultPagination,
-    searchParams: defaultSearchParams,
+    searchParams: defaultSearchParamsRef.current,
   });
 
   useSyncToHistory(options.syncToUrl, state);
@@ -78,7 +81,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         );
 
         const result = transformListResponse
-          ? transformListResponse(response as any)
+          ? transformListResponse(response)
           : response;
 
         dispatch({
@@ -86,7 +89,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           payload: { ...result, sorts, number: pageNo, size: pageSize },
         });
 
-        rawResponseRef.current = result as any;
+        rawResponseRef.current = response as any;
         return result;
       } catch (e) {
         dispatch({ type: 'FETCH_FAILURE' });
@@ -101,7 +104,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       defaultPagination.pageNo,
       defaultPagination.pageSize,
       defaultPagination.sorts,
-      defaultSearchParams,
+      defaultSearchParamsRef.current,
     );
   }, [url]);
 
@@ -288,7 +291,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
       try {
         const response: T = await http.get(`${baseUrl}/${id}`);
         const result = transformFetchOneResponse
-          ? transformFetchOneResponse(response as any)
+          ? transformFetchOneResponse(response)
           : response;
 
         if (isNeedUpdate) {
@@ -318,7 +321,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
           : itemInfo;
         const response: T = await http.post(baseUrl, info);
         const result = transformSaveResponse
-          ? transformSaveResponse(response as any)
+          ? transformSaveResponse(response)
           : response;
 
         if (isNeedUpdate) {
@@ -353,7 +356,7 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
         const response: T = await http.put(`${baseUrl}/${info[keyName]}`, info);
 
         const result = transformUpdateResponse
-          ? transformUpdateResponse(response as any)
+          ? transformUpdateResponse(response)
           : response;
 
         if (isNeedUpdate) {
@@ -450,8 +453,21 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
    */
   const reset = useCallback(() => {
     const { pageNo, pageSize, sorts } = state.pagination;
-    return doFetch(pageNo, pageSize, sorts, defaultSearchParams);
-  }, [defaultSearchParams, doFetch, state.pagination]);
+    return doFetch(pageNo, pageSize, sorts, defaultSearchParamsRef.current);
+  }, [doFetch, state.pagination]);
+
+  /**
+   * 设置默认查询条件并完成一次查询
+   *
+   * @returns
+   */
+  const setDefaultSearchParams = useCallback(
+    (searchParams: { [x: string]: string }) => {
+      defaultSearchParamsRef.current = searchParams;
+      return query(searchParams);
+    },
+    [query],
+  );
 
   return {
     ...state,
@@ -473,11 +489,12 @@ function useRestPageApi<T, RawResponse = PageResponse<T>>(
     save,
     update,
     remove,
-    defaultSearchParams,
+    defaultSearchParams: defaultSearchParamsRef.current,
     query,
     reload,
     reset,
     clean,
+    setDefaultSearchParams,
   };
 }
 

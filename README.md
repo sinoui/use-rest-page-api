@@ -654,6 +654,8 @@ const isLoading = dataSource.isLoading;
 
 // 获取是否加载列表数据失败的状态
 const isError = dataSource.isError;
+// 设置默认查询条件
+dataSource.setDefaultSearchParams({userName:'张三'});
 ```
 
 注意：这里介绍的`getItemById`、`updateItem`、`setItem`、`addItem`、`removeItemById`这些方法只会与`dataSource.items`进行交互，不会与 RESTful CRUD API 进行交互。如果需要与 RESTful CRUD API 交互，参见[与增删改查 API 交互](#与增删改查-api-交互)。
