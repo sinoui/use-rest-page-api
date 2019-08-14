@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useReducer, useCallback, useRef, useMemo, useEffect } from 'react';
+import { useReducer, useCallback, useRef, useMemo } from 'react';
 import http from '@sinoui/http';
 import { PageResponse, Options, SortInfo, RestPageResponseInfo } from './types';
 import reducer, { Reducer } from './reducer';
