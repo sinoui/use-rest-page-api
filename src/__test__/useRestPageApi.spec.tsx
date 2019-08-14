@@ -1236,9 +1236,6 @@ it('获取列表数据时，即使有转化器，rawResponse是转换前的值',
   );
   await waitForNextUpdate();
 
-  result.current.fetch();
-  await waitForNextUpdate();
-
   expect(result.current.rawResponse).toEqual(rawResponse);
 });
 

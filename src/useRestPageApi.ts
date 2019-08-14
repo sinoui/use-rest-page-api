@@ -84,12 +84,13 @@ function useRestPageApi<T, RawResponse = any>(
           ? transformListResponse(response)
           : response;
 
+        rawResponseRef.current = response as any;
+
         dispatch({
           type: 'FETCH_SUCCESS',
           payload: { ...result, sorts, number: pageNo, size: pageSize },
         });
 
-        rawResponseRef.current = response as any;
         return result;
       } catch (e) {
         dispatch({ type: 'FETCH_FAILURE' });
