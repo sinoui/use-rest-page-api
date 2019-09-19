@@ -3,6 +3,7 @@
   "javascript.format.enable": false,
   "typescript.format.enable": false,
   "eslint.enable": true,
+  "eslint.autoFixOnSave": true,
   "prettier.eslintIntegration": true,
   "eslint.validate": [
     "javascript",
