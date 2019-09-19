@@ -1,4 +1,4 @@
-import { renderHook } from 'react-hooks-testing-library';
+import { renderHook } from '@testing-library/react-hooks';
 import http, { HttpResponse } from '@sinoui/http';
 import qs from 'qs';
 import React from 'react';
