@@ -1,5 +1,8 @@
 # @sinoui/use-rest-page-api
 
+[![npm version](https://img.shields.io/npm/v/@sinoui/use-rest-page-api)](https://www.npmjs.com/package/@sinoui/use-rest-page-api)
+[![downloads](https://img.shields.io/npm/dm/@sinoui/use-rest-page-api)](https://www.npmjs.com/package/@sinoui/use-rest-page-api)
+
 @sinoui/use-rest-page-api 旨在简化分页列表和 RESTful CRUD API 交互的状态管理。
 
 它可以帮助我们：
