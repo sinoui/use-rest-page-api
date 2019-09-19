@@ -4,7 +4,7 @@
   "description": "简化分页列表与RESTful CRUD API交互的状态管理",
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/use-rest-page-api.es.production.js",
+  "module": "dist/sinoui-use-rest-page-api.esm.js",
   "typings": "dist/index.d.ts",
   "homepage": "https://sinoui.github.io/use-rest-page-api/",
   "bugs": {
