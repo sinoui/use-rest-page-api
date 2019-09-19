@@ -4,9 +4,16 @@
   "description": "简化分页列表与RESTful CRUD API交互的状态管理",
   "license": "MIT",
   "main": "dist/index.js",
-  "umd:main": "dist/use-rest-page-api.umd.production.js",
   "module": "dist/use-rest-page-api.es.production.js",
   "typings": "dist/index.d.ts",
+  "homepage": "https://sinoui.github.io/use-rest-page-api/",
+  "bugs": {
+    "url": "https://github.com/sinoui/use-rest-page-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinoui/use-rest-page-api.git"
+  },
   "scripts": {
     "start": "ts-lib-tools watch",
     "test": "ts-lib-tools test",
@@ -46,29 +53,29 @@
     "assets"
   ],
   "dependencies": {
-    "@babel/polyfill": "^7.4.4",
-    "@babel/runtime": "^7.4.4",
-    "@sinoui/http": "^0.2.2",
-    "immer": "^3.1.3",
-    "qs": "^6.7.0"
+    "@babel/polyfill": "^7.6.0",
+    "@babel/runtime": "^7.6.0",
+    "@sinoui/http": "^1.0.0",
+    "immer": "^4.0.0",
+    "qs": "^6.8.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^8.0.1",
+    "@testing-library/react": "^9.1.4",
     "@types/qs": "^6.5.3",
-    "@types/react": "^16.8.18",
-    "@types/react-dom": "^16.8.4",
-    "husky": "^2.3.0",
-    "lint-staged": "^8.1.7",
-    "prettier": "^1.17.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-hooks-testing-library": "^0.5.0",
-    "react-test-renderer": "^16.8.6",
-    "ts-lib-tools": "^0.2.2",
-    "typescript": "^3.4.5"
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "@testing-library/react-hooks": "^2.0.1",
+    "react-test-renderer": "^16.9.0",
+    "ts-lib-tools": "^0.4.7",
+    "typescript": "^3.6.3"
   },
   "peerDependencies": {
-    "react": "^16.8.6"
+    "react": "^16.8.0"
   },
   "publishConfig": {
     "access": "public"
