@@ -155,9 +155,19 @@ function useRestPageApi<T, RawResponse = any>(
    */
   const sortWith = useCallback(
     (sorts: SortInfo[]) => {
-      return doFetch(state.pagination.pageNo, state.pagination.pageSize, sorts);
+      return doFetch(
+        state.pagination.pageNo,
+        state.pagination.pageSize,
+        sorts,
+        state.searchParams,
+      );
     },
-    [doFetch, state.pagination.pageNo, state.pagination.pageSize],
+    [
+      doFetch,
+      state.pagination.pageNo,
+      state.pagination.pageSize,
+      state.searchParams,
+    ],
   );
 
   /**
@@ -288,7 +298,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const get = useCallback(
-    async function get(id: string, isNeedUpdate: boolean = true): Promise<T> {
+    async function get(id: string, isNeedUpdate = true): Promise<T> {
       try {
         const response: T = await http.get(`${baseUrl}/${id}`);
         const result = transformFetchOneResponse
@@ -315,7 +325,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const save = useCallback(
-    async function save(itemInfo: T, isNeedUpdate: boolean = true): Promise<T> {
+    async function save(itemInfo: T, isNeedUpdate = true): Promise<T> {
       try {
         const info = transformSaveRequest
           ? transformSaveRequest(itemInfo)
@@ -346,10 +356,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const update = useCallback(
-    async function update(
-      itemInfo: T,
-      isNeedUpdate: boolean = true,
-    ): Promise<T> {
+    async function update(itemInfo: T, isNeedUpdate = true): Promise<T> {
       try {
         const info: any = transformUpdateRequest
           ? transformUpdateRequest(itemInfo)
@@ -386,10 +393,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const remove = useCallback(
-    async function remove(
-      ids: string | string[],
-      isNeedUpdate: boolean = true,
-    ) {
+    async function remove(ids: string | string[], isNeedUpdate = true) {
       try {
         if (typeof ids !== 'string') {
           if (useMultiDeleteApi) {

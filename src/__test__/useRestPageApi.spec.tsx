@@ -270,7 +270,11 @@ it('列表排序', async () => {
     });
 
   const { result, waitForNextUpdate } = renderHook(() =>
-    useRestPageApi('/test'),
+    useRestPageApi('/test', undefined, {
+      defaultSearchParams: {
+        x: '1',
+      },
+    }),
   );
 
   expect(result.current.pagination.sorts).toBeUndefined();
@@ -286,6 +290,7 @@ it('列表排序', async () => {
     { property: 'age', direction: 'desc' },
     { property: 'userId', direction: 'asc' },
   ]);
+  expect(result.current.searchParams).toEqual({ x: '1' });
   expect(http.get).toBeCalledTimes(2);
 });
 
