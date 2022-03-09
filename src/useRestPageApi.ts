@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useReducer, useCallback, useRef, useMemo } from 'react';
 import http from '@sinoui/http';
@@ -44,14 +45,15 @@ function useRestPageApi<T, RawResponse = any>(
     defaultSearchParams,
   );
 
-  const defaultPagination = useMemo(() => {
-    return {
+  const defaultPagination = useMemo(
+    () => ({
       ...pageInfo,
       totalElements: defaultValue.length || 0,
       totalPages:
         Math.ceil((defaultValue.length || 0) / (options.pageSize || 15)) || 0,
-    };
-  }, [defaultValue.length, options.pageSize, pageInfo]);
+    }),
+    [defaultValue.length, options.pageSize, pageInfo],
+  );
 
   const [state, dispatch] = useReducer<Reducer<T>>(reducer, {
     isError: false,
@@ -59,6 +61,8 @@ function useRestPageApi<T, RawResponse = any>(
     items: defaultValue,
     pagination: defaultPagination,
     searchParams: defaultSearchParamsRef.current,
+    selectIds: [],
+    keyName,
   });
 
   useSyncToHistory(options.syncToUrl, state);
@@ -154,14 +158,13 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<PageResponse<T>>}
    */
   const sortWith = useCallback(
-    (sorts: SortInfo[]) => {
-      return doFetch(
+    (sorts: SortInfo[]) =>
+      doFetch(
         state.pagination.pageNo,
         state.pagination.pageSize,
         sorts,
         state.searchParams,
-      );
-    },
+      ),
     [
       doFetch,
       state.pagination.pageNo,
@@ -298,7 +301,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const get = useCallback(
-    async function get(id: string, isNeedUpdate = true): Promise<T> {
+    async (id: string, isNeedUpdate = true): Promise<T> => {
       try {
         const response: T = await http.get(`${baseUrl}/${id}`);
         const result = transformFetchOneResponse
@@ -325,7 +328,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const save = useCallback(
-    async function save(itemInfo: T, isNeedUpdate = true): Promise<T> {
+    async (itemInfo: T, isNeedUpdate = true): Promise<T> => {
       try {
         const info = transformSaveRequest
           ? transformSaveRequest(itemInfo)
@@ -356,7 +359,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const update = useCallback(
-    async function update(itemInfo: T, isNeedUpdate = true): Promise<T> {
+    async (itemInfo: T, isNeedUpdate = true): Promise<T> => {
       try {
         const info: any = transformUpdateRequest
           ? transformUpdateRequest(itemInfo)
@@ -393,7 +396,7 @@ function useRestPageApi<T, RawResponse = any>(
    * @returns {Promise<T>}
    */
   const remove = useCallback(
-    async function remove(ids: string | string[], isNeedUpdate = true) {
+    async (ids: string | string[], isNeedUpdate = true) => {
       try {
         if (typeof ids !== 'string') {
           if (useMultiDeleteApi) {
@@ -474,6 +477,14 @@ function useRestPageApi<T, RawResponse = any>(
     [query],
   );
 
+  const toggleSelect = useCallback((id: string) => {
+    dispatch({ type: 'TOGGLE_SELECT_ITEM', payload: { id } });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    dispatch({ type: 'TOGGLE_SELECT_ALL' });
+  }, []);
+
   return {
     ...state,
     keyName,
@@ -500,6 +511,8 @@ function useRestPageApi<T, RawResponse = any>(
     reset,
     clean,
     setDefaultSearchParams,
+    toggleSelectAll,
+    toggleSelect,
   };
 }
 

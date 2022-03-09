@@ -14,6 +14,8 @@ export interface State<T> {
   items: T[];
   pagination: PageInfo;
   searchParams?: { [x: string]: string };
+  selectIds: string[];
+  keyName: string;
 }
 
 export interface Reducer<T> {
@@ -100,6 +102,31 @@ const removeItemById = produce(<T>(draft: State<T>, action: Action) => {
 });
 
 /**
+ * 列表项选中事件
+ */
+const toggleSelectItem = produce(<T>(draft: State<T>, action: Action) => {
+  const { id } = action.payload;
+  const idx = draft.selectIds.findIndex((item) => item === id);
+  if (idx !== -1) {
+    draft.selectIds.splice(idx, 1);
+  } else {
+    draft.selectIds.push(id);
+  }
+});
+
+/**
+ * 全选事件
+ */
+const toggleSelectAll = produce(<T>(draft: State<T>) => {
+  const { items, selectIds, keyName } = draft;
+  const rowKeys = items.map((item: any) => item[keyName]);
+
+  const flag = rowKeys.some((item) => !selectIds.includes(item));
+
+  draft.selectIds = flag ? rowKeys : [];
+});
+
+/**
  * 获取数据的reducer
  *
  * @param state 状态
@@ -120,6 +147,8 @@ function reducer<T>(state: State<T>, action: Action) {
         isLoading: false,
         isError: false,
         items: action.payload ? action.payload.content : [...state.items],
+        // 每次查询之后重置之前的选中id集合
+        selectIds: [],
         pagination: action.payload
           ? {
               ...state.pagination,
@@ -171,6 +200,11 @@ function reducer<T>(state: State<T>, action: Action) {
           totalPages: 0,
         },
       };
+    case 'TOGGLE_SELECT_ITEM':
+      return toggleSelectItem(state, action);
+
+    case 'TOGGLE_SELECT_ALL':
+      return toggleSelectAll(state);
     default:
       return state;
   }

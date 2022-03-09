@@ -36,7 +36,7 @@ export function getSearchParamsAndPageInfo(
   syncToUrl: boolean | undefined,
 ): [
   { [x: string]: any } | undefined,
-  { pageNo: number; pageSize: number; sorts?: SortInfo[] }
+  { pageNo: number; pageSize: number; sorts?: SortInfo[] },
 ] {
   if (syncToUrl) {
     const searchParams = getSearchParamsFromLocation();
@@ -52,9 +52,11 @@ export function getSearchParamsAndPageInfo(
     return [
       searchParamsFromLocation,
       {
-        pageSize: parseIntFromStr(pageSize, defaultPageInfo.pageSize),
-        pageNo: parseIntFromStr(pageNo, defaultPageInfo.pageNo),
-        sorts: pageSize || pageNo || sorts ? sorts : defaultPageInfo.sorts, // 只要url查询参数中包含任何一个分页字段，则表示之前做过分页信息同步到url，这时总是从url中取排序信息。
+        pageSize: parseIntFromStr(pageSize as string, defaultPageInfo.pageSize),
+        pageNo: parseIntFromStr(pageNo as string, defaultPageInfo.pageNo),
+        sorts: (pageSize || pageNo || sorts
+          ? sorts
+          : defaultPageInfo.sorts) as any, // 只要url查询参数中包含任何一个分页字段，则表示之前做过分页信息同步到url，这时总是从url中取排序信息。
       },
     ];
   }

@@ -9,6 +9,7 @@ const defaultState = {
     pageSize: 15,
     pageNo: 0,
   },
+  selectIds: [],
 };
 
 it('type为FETCH_SUCCESS时,paload为空，此时items和pagenation保持不变', () => {
@@ -71,4 +72,71 @@ it('删除数据', () => {
   });
 
   expect(thirdState.items.length).toBe(6);
+});
+
+it('单条数据选中事件', () => {
+  const state = {
+    items: [
+      { userId: '1', userName: '张三', age: 27 },
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '3', userName: '李四', age: 20 },
+      { userId: '4', userName: '李四', age: 20 },
+      { userId: '5', userName: '李四', age: 20 },
+    ],
+    isError: false,
+    isLoading: false,
+    selectIds: [],
+    pagination: {
+      totalElements: 0,
+      pageSize: 15,
+      pageNo: 0,
+    },
+  };
+
+  const newState = reducer(state, {
+    type: 'TOGGLE_SELECT_ITEM',
+    payload: { id: '1' },
+  });
+
+  expect(newState.selectIds).toEqual(['1']);
+
+  const result = reducer(newState, {
+    type: 'TOGGLE_SELECT_ITEM',
+    payload: { id: '1' },
+  });
+
+  expect(result.selectIds).toEqual([]);
+});
+
+it('全选事件', () => {
+  const state = {
+    items: [
+      { userId: '1', userName: '张三', age: 27 },
+      { userId: '2', userName: '李四', age: 20 },
+      { userId: '3', userName: '李四', age: 20 },
+      { userId: '4', userName: '李四', age: 20 },
+      { userId: '5', userName: '李四', age: 20 },
+    ],
+    keyName: 'userId',
+    isError: false,
+    isLoading: false,
+    selectIds: ['1'],
+    pagination: {
+      totalElements: 0,
+      pageSize: 15,
+      pageNo: 0,
+    },
+  };
+
+  const newState = reducer(state, {
+    type: 'TOGGLE_SELECT_ALL',
+  });
+
+  expect(newState.selectIds).toEqual(['1', '2', '3', '4', '5']);
+
+  const result = reducer(newState, {
+    type: 'TOGGLE_SELECT_ALL',
+  });
+
+  expect(result.selectIds).toEqual([]);
 });

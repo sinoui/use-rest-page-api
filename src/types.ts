@@ -273,4 +273,16 @@ export interface RestPageResponseInfo<T, RawResponse> {
   setDefaultSearchParams: (searchParams: {
     [x: string]: string;
   }) => Promise<PageResponse<T>>;
+  /**
+   * 选中的id集合
+   */
+  selectIds: string[];
+  /**
+   * 行数据选中事件
+   */
+  toggleSelect: (id: string) => void;
+  /**
+   * 当前页全选事件
+   */
+  toggleSelectAll: () => void;
 }
