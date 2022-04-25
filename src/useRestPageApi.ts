@@ -105,12 +105,14 @@ function useRestPageApi<T, RawResponse = any>(
   );
 
   useEffect2(() => {
-    doFetch(
-      defaultPagination.pageNo,
-      defaultPagination.pageSize,
-      defaultPagination.sorts,
-      defaultSearchParamsRef.current,
-    );
+    if (url) {
+      doFetch(
+        defaultPagination.pageNo,
+        defaultPagination.pageSize,
+        defaultPagination.sorts,
+        defaultSearchParamsRef.current,
+      );
+    }
   }, [url]);
 
   /**
