@@ -45,6 +45,8 @@ function useRestPageApi<T, RawResponse = any>(
     defaultSearchParams,
   );
 
+  defaultSearchParamsRef.current = defaultSearchParams;
+
   const defaultPagination = useMemo(
     () => ({
       ...pageInfo,
