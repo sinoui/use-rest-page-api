@@ -116,7 +116,9 @@ export interface Options<T> {
   /**
    * 指定分页列表查询结果的转换器
    */
-  transformListResponse?: (response: any) => PageResponse<T>;
+  transformListResponse?: (
+    response: any,
+  ) => PageResponse<T> | Promise<PageResponse<T>>;
   /**
    * 指定分页查询条件转换器
    */

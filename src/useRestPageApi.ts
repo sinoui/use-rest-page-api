@@ -87,7 +87,7 @@ function useRestPageApi<T, RawResponse = any>(
         );
 
         const result = transformListResponse
-          ? transformListResponse(response)
+          ? await transformListResponse(response)
           : response;
 
         rawResponseRef.current = response as any;
